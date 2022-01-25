@@ -12,16 +12,36 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        "actual_place_of_residence_id",
+        "login",
         'password',
+        "phone",
+        "role"
     ];
+
+    /**
+     *
+     * Правила валидации
+     *
+     * @return string[]
+     */
+    public static function rules(): array{
+        return [
+            //"actual_place_of_residence_id" => "integer|exists:addresses,id",
+            "email" => "required|string|unique:users,login", // login
+            'password' => "required|string",
+            "telephone" => "required|string", // phone
+            "role" => "required|string",
+        ];
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -29,16 +49,28 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password'
     ];
 
+    // Rest omitted for brevity
+
     /**
-     * The attributes that should be cast.
+     * Get the identifier that will be stored in the subject claim of the JWT.
      *
-     * @var array<string, string>
+     * @return mixed
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }
