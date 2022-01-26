@@ -19,7 +19,9 @@ use Illuminate\Support\Facades\Route;
 //});
 
 Route::group([
-    'prefix' => 'auth'
+    'middleware' => 'api',
+    'prefix' => 'auth',
+    'namespace' => 'App\Http\Controllers',
 ], function () {
     Route::post('/user/login', [\App\Http\Controllers\AuthController::class, "login"]);
     Route::post('/user/registration', [\App\Http\Controllers\AuthController::class, "registration"]);

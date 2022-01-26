@@ -27,6 +27,11 @@ class Passport extends Model
         "sex"
     ];
 
+    protected $hidden = [
+        "id",
+        "place_of_residence_id"
+    ];
+
     /**
      *
      * Правила валидации
@@ -51,5 +56,10 @@ class Passport extends Model
                 Rule::in(['M', 'W'])
             ],
         ];
+    }
+
+    public function placeOfResidence(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Address::class);
     }
 }

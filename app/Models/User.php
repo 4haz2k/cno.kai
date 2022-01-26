@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -20,7 +21,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        "actual_place_of_residence_id",
         "login",
         'password',
         "phone",
@@ -49,7 +49,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password'
+        'password',
+        "actual_place_of_residence_id",
     ];
 
     // Rest omitted for brevity
@@ -69,8 +70,21 @@ class User extends Authenticatable
      *
      * @return array
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function passport(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Passport::class, "id");
+    }
+
+    public function actualPlaceOfResidence(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Address::class);
     }
 }

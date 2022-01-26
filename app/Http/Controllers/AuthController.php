@@ -7,6 +7,7 @@ use App\Models\Passport;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -28,9 +29,9 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function login()
+    public function login(): JsonResponse
     {
-        $credentials = request(['email', 'password']);
+        $credentials = ["login" => \request('email'), "password" => \request("password")];
 
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -180,7 +181,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json(["user" => auth()->user()::with("passport")->with("passport.placeOfResidence")->with("actualPlaceOfResidence")->get()]);
     }
 
     /**
@@ -217,7 +218,17 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth("api")->factory()->getTTL() * 60
+            'expires_in' => $this->guard()->factory()->getTTL() * 60
         ]);
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\Guard
+     */
+    public function guard()
+    {
+        return Auth::guard();
     }
 }
