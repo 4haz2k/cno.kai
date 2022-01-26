@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Address extends Model
 {
@@ -39,5 +40,27 @@ class Address extends Model
             "entrance" => "string", // frame
             "apt" => "string", // apartment
         ];
+    }
+
+    /**
+     *
+     * Получение связанного атрибута паспорта
+     *
+     * @return HasMany
+     */
+    public function passports(): HasMany
+    {
+        return $this->hasMany(Passport::class, "place_of_residence_id");
+    }
+
+    /**
+     *
+     * Получение связанного атрибута пользователей
+     *
+     * @return HasMany
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, "actual_place_of_residence_id");
     }
 }

@@ -48,7 +48,6 @@ class AuthController extends Controller
     public function registration(Request $request): JsonResponse
     {
         $request = $request->all();
-        Log::debug(json_encode($request));
         // Валидация адреса
         $address_request = [
             "country" => $request['actual_living_place']['country'],
@@ -168,8 +167,7 @@ class AuthController extends Controller
                 "id" => $user->id,
                 "name" => $passport->firstname,
                 "surname" => $passport->secondname,
-                "role" => $user->role,
-                "token" => $user->getJWTIdentifier()
+                "role" => $user->role
             ]
         ]);
     }
@@ -181,7 +179,14 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(["user" => auth()->user()::with("passport")->with("passport.placeOfResidence")->with("actualPlaceOfResidence")->get()]);
+        return response()->json([
+            "user" => auth()->user()::with(["passport", "passport.placeOfResidence", "actualPlaceOfResidence"])->get(),
+//            "token" => [
+//                'access_token' => auth()->refresh(),
+//                'token_type' => 'bearer',
+//                'expires_in' => $this->guard()->factory()->getTTL() * 60
+//            ]
+        ]);
     }
 
     /**
@@ -189,7 +194,7 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->logout();
 
@@ -203,7 +208,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth("api")->refresh());
+        return $this->respondWithToken(auth()->refresh());
     }
 
     /**

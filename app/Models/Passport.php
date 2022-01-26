@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Validation\Rule;
 
 class Passport extends Model
@@ -58,8 +60,25 @@ class Passport extends Model
         ];
     }
 
-    public function placeOfResidence(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    /**
+     *
+     * Получение связанного атрибута адреса прописки
+     *
+     * @return BelongsTo
+     */
+    public function placeOfResidence(): BelongsTo
     {
         return $this->belongsTo(Address::class);
+    }
+
+    /**
+     *
+     * Получение связанного атрибута пользователя
+     *
+     * @return HasOne
+     */
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, "id");
     }
 }

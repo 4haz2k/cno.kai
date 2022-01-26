@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -76,14 +78,45 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     *
+     * Получение связанного атрибута паспорта
+     *
+     * @return HasOne
      */
-    public function passport(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function passport(): HasOne
     {
         return $this->hasOne(Passport::class, "id");
     }
 
-    public function actualPlaceOfResidence(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    /**
+     *
+     * Получение связанного атрибута студента
+     *
+     * @return HasOne
+     */
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class, "id");
+    }
+
+    /**
+     *
+     * Получение связанного атрибута преподаватель
+     *
+     * @return HasOne
+     */
+    public function professor(): HasOne
+    {
+        return $this->hasOne(Professor::class, "id");
+    }
+
+    /**
+     *
+     * Получение связанного атрибута фактического адреса проживания
+     *
+     * @return BelongsTo
+     */
+    public function actualPlaceOfResidence(): BelongsTo
     {
         return $this->belongsTo(Address::class);
     }
