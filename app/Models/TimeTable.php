@@ -13,6 +13,8 @@ class TimeTable extends Model
 
     public $timestamps = false;
 
+    protected $table = "timetable";
+
     /**
      *
      * Получение связанного атрибута предмет преподавателя

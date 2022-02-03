@@ -12,6 +12,8 @@ class Speciality extends Model
 
     public $timestamps = false;
 
+    protected $table = "specialty";
+
     /**
      *
      * Получение связанного атрибута специальности

@@ -13,6 +13,8 @@ class SubjectsOfProfessor extends Model
 
     public $timestamps = false;
 
+    protected $table = "subjects_of_professor";
+
     /**
      *
      * Получение связанного атрибута предмет

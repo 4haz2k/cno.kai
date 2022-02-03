@@ -14,5 +14,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return "CNO KAI API";
 });
+
+Route::get('/users_list', function () {
+    $users = \App\Models\User::all();
+    $users_list = "";
+    foreach ($users as $user){
+        $users_list .= $user->login."<br>";
+    }
+
+    return $users_list;
+});
+
+Route::get('/test', [\App\Http\Controllers\UserController::class, "test"]);
