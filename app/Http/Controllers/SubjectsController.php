@@ -30,8 +30,4 @@ class SubjectsController extends Controller
             "subjects" => Subject::all()->makeHidden(["description"])
         ]);
     }
-
-    public function getSubjectsById(){
-
-    }
 }

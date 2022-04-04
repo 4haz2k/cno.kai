@@ -15,6 +15,11 @@ class SubjectsOfProfessor extends Model
 
     protected $table = "subjects_of_professor";
 
+    protected $hidden = [
+        "subject_id",
+        "professor_id"
+    ];
+
     /**
      *
      * Получение связанного атрибута предмет
@@ -43,8 +48,9 @@ class SubjectsOfProfessor extends Model
      *
      * @return HasMany
      */
-    public function position(): HasMany
+    public function timeTable(): HasMany
     {
         return $this->hasMany(TimeTable::class, "subject_of_professor_id");
     }
+
 }

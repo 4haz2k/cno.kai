@@ -13,6 +13,10 @@ class Group extends Model
 
     public $timestamps = false;
 
+    protected $hidden = [
+        //"specialty_id",
+    ];
+
     /**
      *
      * Получение связанного атрибута студентов
@@ -32,6 +36,6 @@ class Group extends Model
      */
     public function speciality(): BelongsTo
     {
-        return $this->belongsTo(Speciality::class);
+        return $this->belongsTo(Speciality::class, "specialty_id");
     }
 }

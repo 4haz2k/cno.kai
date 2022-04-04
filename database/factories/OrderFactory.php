@@ -23,7 +23,7 @@ class OrderFactory extends Factory
             "student_id" => Student::all()->random()->id,
             "timetable_id" => TimeTable::factory()->create()->id,
             "service_id" => Service::all()->random()->id,
-            "status" => $this->faker->randomElement(["Выполнено", "Ожидает оплаты", "Создан"]),
+            "status" => $this->faker->randomElement(["Ожидает исполнения", "Исполнено"]),
             "price" => $this->faker->randomFloat(2, 200, 5000),
             "treaty" => "*treaty link*",
             "create_date" => $this->faker->dateTime,

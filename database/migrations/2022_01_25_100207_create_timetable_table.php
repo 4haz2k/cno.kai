@@ -18,6 +18,7 @@ class CreateTimetableTable extends Migration
             $table->unsignedBigInteger("subject_of_professor_id")->comment("ID предмета преподавателя");
             $table->date("date")->comment("Дата");
             $table->string("classroom")->comment("Аудитория");
+            $table->string("building")->comment("Здание университета");
 
             //relations
             $table->foreign("subject_of_professor_id")->references("id")->on("subjects_of_professor");

@@ -6,6 +6,7 @@ use App\Models\Professor;
 use App\Models\Subject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProfessorsController extends Controller
 {
@@ -21,47 +22,39 @@ class ProfessorsController extends Controller
 
     /**
      *
-     * Получение преподавателей
+     * Возвращает список преподавателей и предметы
      *
      * @return JsonResponse
      */
-    public function getProfessors()
+    public function getProfessors(): JsonResponse
     {
-        if (\request('name'))
-            $name = explode(' ', \request('name'));
+        $subjects = Subject::all()->toArray();
 
-        $name = \request('name');
+        $professors = Professor::with(["subjects", "position", "user.passport"])
+            ->whereHas("subjects", function ($query){
+                $query->where("subject_id", "!=", null);
+            })
+            ->paginate(\request("page_size") ? : 10)
+            ->toArray();
 
-        if(\request('subject'))
-            $subject = \request('subject');
+        unset(
+            $professors["links"],
+            $professors["to"],
+            $professors["prev_page_url"],
+            $professors["path"],
+            $professors["next_page_url"],
+            $professors["last_page_url"],
+            $professors["first_page_url"],
+            $professors["from"],
+            $professors["last_page"]
+        );
 
-        // сортировка с помощью предмета
-        return response()->json([
-            "professors" => Subject::with(["professors"])
-                ->where("subjects.title", "LIKE", "%{$subject}%")
-                ->get()
-                ->pluck("professors")
-                ->filter()
-                ->flatten()
-                ->all()
-        ]);
-
-//        return response()->json([
-//            "professors" => Subject::with(["professors" => function($q) use ($name){
-//                $q->where("professors.ITN", "LIKE", "%".$name[0]."%");
-//            }])
-////                ->where("subjects.title", "LIKE", "%{$subject}%")
-////                ->get()
-////                ->pluck("professors")
-////                ->filter()
-////                ->flatten()
-////                ->all()
-//        ]);
+        return response()->json($professors + ["subjects" => $subjects]);
     }
 
     /**
      *
-     *
+     * Получение преподавателей по id предмета
      *
      * @return JsonResponse
      */
@@ -100,5 +93,30 @@ class ProfessorsController extends Controller
         $result["total_pages"] = ceil($professors_array->total() / 5);
 
         return response()->json($result);
+    }
+
+    /**
+     *
+     * Получение фио преподов и их id
+     *
+     * @return JsonResponse
+     */
+    public function getShortProfessors(): JsonResponse
+    {
+       $professors = Professor::with(["user.passport"])->get();
+
+       $professors_list = [];
+
+       foreach ($professors as $professor) {
+            array_push($professors_list, [
+                "id" => $professor->id,
+                "name" => $professor->user->passport->firstname,
+                "secondname" => $professor->user->passport->secondname,
+                "thirdname" => $professor->user->passport->thirdname,
+                "fullname" => "{$professor->user->passport->secondname} {$professor->user->passport->firstname} {$professor->user->passport->thirdname}"
+            ]);
+       }
+
+       return response()->json($professors_list);
     }
 }

@@ -17,7 +17,7 @@ class ServiceFactory extends Factory
     {
         return [
             "title" => $this->faker->randomElement(["Дополнительное занятие", "Сдача долгов", "Репетиторство"]),
-            "description" => "Типо описание, типо дельфин, все дела..."
+            "description" => "Это поле описания, тестовая часть"
         ];
     }
 }

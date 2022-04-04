@@ -25,8 +25,8 @@ Route::group([
 ], function () {
     Route::post('/login', [\App\Http\Controllers\AuthController::class, "login"]);
     Route::post('/registration', [\App\Http\Controllers\AuthController::class, "registration"]);
-    Route::post('/logout', [\App\Http\Controllers\AuthController::class, "logout"]);
-    Route::post('/refresh', [\App\Http\Controllers\AuthController::class, "refresh"]);
+//    Route::post('/logout', [\App\Http\Controllers\AuthController::class, "logout"]);
+//    Route::post('/refresh', [\App\Http\Controllers\AuthController::class, "refresh"]);
 });
 
 Route::group([
@@ -35,8 +35,63 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/me', [\App\Http\Controllers\AuthController::class, "me"]);
-    Route::get('/users', [\App\Http\Controllers\UserController::class, "getUsers"]);
-    Route::get('/professors', [\App\Http\Controllers\ProfessorsController::class, "getProfessors"]);
-    Route::get('/subjects', [\App\Http\Controllers\SubjectsController::class, "getSubjects"]);
-    Route::get('/subjects_id', [\App\Http\Controllers\ProfessorsController::class, "getProfessorsById"]);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'orders',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::post('/all', [\App\Http\Controllers\OrdersController::class, "getOrders"]);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'professors',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::post('/all_with_subjects', [\App\Http\Controllers\ProfessorsController::class, "getProfessors"]);
+    Route::get('/get_by_subject_id', [\App\Http\Controllers\ProfessorsController::class, "getProfessorsById"]);
+    Route::post('/short/all', [\App\Http\Controllers\ProfessorsController::class, "getShortProfessors"]);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'students',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::post('/all', [\App\Http\Controllers\StudentsController::class, "getStudents"]);
+    Route::post('/get_by_group_and_speciality', [\App\Http\Controllers\StudentsController::class, "getByGroupAndSpeciality"]);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'subjects',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::get('/all', [\App\Http\Controllers\SubjectsController::class, "getSubjects"]);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'groups',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::post('/all', [\App\Http\Controllers\GroupsController::class, "getGroups"]);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'specialities',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::post('/all', [\App\Http\Controllers\SpecialitiesController::class, "getSpecialities"]);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'other',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::post('/statistic/orders', [\App\Http\Controllers\OthersController::class, "getStatistic"]);
 });

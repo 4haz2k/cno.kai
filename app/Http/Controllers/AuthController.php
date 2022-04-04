@@ -31,13 +31,76 @@ class AuthController extends Controller
      */
     public function login(): JsonResponse
     {
-        $credentials = ["login" => \request('email'), "password" => \request("password")];
+//        $credentials = ["login" => \request('email'), "password" => \request("password")];
+//
+//        if (! $token = auth()->attempt($credentials)) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
+//
+//        return $this->respondWithToken($token);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $user = User::where("login", \request("email"));
+
+        if(!$user->first())
+            return response()->json(['error' => 'Bad login'], 401);
+
+        if (!Hash::check(\request("password"), $user->first()->password))
+            return response()->json(['error' => 'Bad password'], 401);
+
+        $user = $user->with(["passport.placeOfResidence", "student.group.speciality", "professor"])->get();
+
+        $passport = $user->pluck("passport")[0];
+
+        $group = $user->pluck("student.group");
+
+        switch ($user[0]->role){
+            case "STUDENT":
+                $data = [
+                    "id" => $user[0]->id,
+                    "passport" => $passport,
+                    "faculty" => $group[0]->speciality->faculty,
+                    "email" => $user[0]->login,
+                    "telephone" => $user[0]->phone,
+                    "group" => $group[0]->group_code,
+                    "img" => $user[0]->img,
+                    "role" => $user[0]->role
+                ];
+                break;
+            case "PREPOD":
+                $data = [
+                    "id" => $user[0]->id,
+                    "passport" => $passport,
+                    "email" => $user[0]->login,
+                    "telephone" => $user[0]->phone,
+
+                    "price" => $user[0]->professor->price,
+                    "exp" => $user[0]->professor->date_of_commencement_of_teaching_activity,
+                    "INN" => $user[0]->professor->ITN,
+                    "SNILS" => $user[0]->professor->INILA,
+                    "personal_number" => $user[0]->professor->personnel_number,
+
+                    "img" => $user[0]->img,
+                    "role" => $user[0]->role
+                ];
+                break;
+
+            case "ADMIN":
+                $data = [
+                    "id" => $user[0]->id,
+                    "passport" => $passport,
+                    "email" => $user[0]->login,
+                    "telephone" => $user[0]->phone,
+                    "img" => $user[0]->img,
+                    "role" => $user[0]->role
+                ];
+                break;
+
+            default:
+                $data = ["error" => "Undefined role: {$user[0]->role}"];
+                break;
         }
 
-        return $this->respondWithToken($token);
+        return response()->json($data);
     }
 
     /**
@@ -225,6 +288,7 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => $this->guard()->factory()->getTTL() * 60
         ]);
+
     }
 
     /**

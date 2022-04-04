@@ -21,7 +21,7 @@ Route::get('/users_list', function () {
     $users = \App\Models\User::all();
     $users_list = "";
     foreach ($users as $user){
-        $users_list .= $user->login."<br>";
+        $users_list .= "<strong>{$user->login}</strong>"." | role: ". $user->role ."<br>";
     }
 
     return $users_list;

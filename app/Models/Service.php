@@ -15,34 +15,12 @@ class Service extends Model
 
     /**
      *
-     * Получение связанного атрибута тарифы
-     *
-     * @return HasMany
-     */
-    public function rates(): HasMany
-    {
-        return $this->hasMany(Rate::class, "service_id");
-    }
-
-    /**
-     *
-     * Получение связанного атрибута тарифы
+     * Получение связанного атрибута заказы
      *
      * @return HasMany
      */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, "service_id");
-    }
-
-    /**
-     *
-     * Получение связанного атрибута должности
-     *
-     * @return BelongsToMany
-     */
-    public function positions(): BelongsToMany
-    {
-        return $this->belongsToMany(Position::class, "rates");
     }
 }

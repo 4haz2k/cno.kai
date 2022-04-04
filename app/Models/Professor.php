@@ -14,6 +14,8 @@ class Professor extends Model
 
     public $timestamps = false;
 
+    protected $hidden = [];
+
     /**
      *
      * Получение связанного атрибута пользователь
@@ -34,16 +36,5 @@ class Professor extends Model
     public function subjects(): BelongsToMany
     {
         return $this->belongsToMany(Subject::class, "subjects_of_professor");
-    }
-
-    /**
-     *
-     * Получение связанного атрибута должность
-     *
-     * @return BelongsTo
-     */
-    public function position(): BelongsTo
-    {
-        return $this->belongsTo(Position::class);
     }
 }

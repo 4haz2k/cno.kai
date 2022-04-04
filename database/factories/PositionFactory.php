@@ -19,7 +19,7 @@ class PositionFactory extends Factory
         return [
             "title" => $this->faker->randomElement(["Заведующий кафедры", "Преподаватель", "Лаборант"]),
             "rank" => $this->faker->randomElement(["Аспирант", "Профессор", "Доцент", "Кандидат наук"]),
-            "description" => "здесь типо описание, но я просто напишу, что дельфины это круто"
+            "description" => "Здесь описание, но я просто напишу, что дельфины это круто"
         ];
     }
 }

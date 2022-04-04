@@ -15,6 +15,10 @@ class TimeTable extends Model
 
     protected $table = "timetable";
 
+    protected $hidden = [
+        "subject_of_professor_id"
+    ];
+
     /**
      *
      * Получение связанного атрибута предмет преподавателя

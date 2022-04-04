@@ -14,6 +14,10 @@ class Student extends Model
 
     public $timestamps = false;
 
+    protected $hidden = [
+      "group_id"
+    ];
+
     /**
      *
      * Получение связанного атрибута пользователя
