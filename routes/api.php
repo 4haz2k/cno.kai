@@ -18,7 +18,13 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::post("/getDocument", [\App\Http\Controllers\DocumentController::class, "getDocument"]);
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'download',
+    'namespace' => 'App\Http\Controllers',
+], function () {
+    Route::get('/treaty', [\App\Http\Controllers\FilesController::class, "getTreaty"]);
+});
 
 Route::group([
     'middleware' => 'api',
