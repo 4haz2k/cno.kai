@@ -51,6 +51,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/all', [\App\Http\Controllers\OrdersController::class, "getOrders"]);
+    Route::post('/getSingle', [\App\Http\Controllers\OrdersController::class, "getSingleOrder"]);
 });
 
 Route::group([

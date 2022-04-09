@@ -98,4 +98,36 @@ class OrdersController extends Controller
 
         return response()->json($data + ["statuses" => ["Ожидает исполнения", "Исполнено"], "total" => $total_pages]);
     }
+
+    public function getSingleOrder(){
+        $data = Order::where("id", \request("order_id"))
+            ->with([
+                "service" => function($q){ $q->select(["id", "title"]); },
+                "student" => function($q){ $q->select(["id"]); },
+                "student.user" => function($q){ $q->select(["id"]); },
+                "student.user.passport" => function($q){ $q->select(["id", "secondname", "firstname", "thirdname"]); },
+                "timeTable",
+                "timeTable.subjectOfProfessor" => function($q){ $q->select(["id", "subject_id", "professor_id"]); },
+                "timeTable.subjectOfProfessor.subject" => function($q){ $q->select(["id", "title"]); },
+                "timeTable.subjectOfProfessor.professor" => function($q){ $q->select(["id"]); },
+                "timeTable.subjectOfProfessor.professor.user" => function($q){ $q->select(["id"]); },
+                "timeTable.subjectOfProfessor.professor.user.passport" => function($q){ $q->select(["id", "secondname", "firstname", "thirdname"]); },])
+            ->first();
+
+        if(!$data){
+            return response()->json(["error" => "Order not found"], 401);
+        }
+
+        $data->makeHidden([
+            "student_id",
+            "timetable_id",
+            "service_id",
+            "price",
+            "treaty",
+            "create_date",
+            "number_of_lessons",
+        ]);
+
+        return response()->json($data);
+    }
 }
