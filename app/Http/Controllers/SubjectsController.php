@@ -26,8 +26,13 @@ class SubjectsController extends Controller
      */
     public function getSubjects(): JsonResponse
     {
+        if(\request("professor_id"))
+            $subjects = Subject::whereHas("professors", function ($q){ $q->where("professors.id", \request("professor_id")); })->get()->makeHidden(["description"]);
+        else
+            $subjects = Subject::all()->makeHidden(["description"]);
+
         return response()->json([
-            "subjects" => Subject::all()->makeHidden(["description"])
+            "subjects" => $subjects
         ]);
     }
 }

@@ -62,6 +62,7 @@ Route::group([
     Route::post('/all_with_subjects', [\App\Http\Controllers\ProfessorsController::class, "getProfessors"]);
     Route::get('/get_by_subject_id', [\App\Http\Controllers\ProfessorsController::class, "getProfessorsById"]);
     Route::post('/short/all', [\App\Http\Controllers\ProfessorsController::class, "getShortProfessors"]);
+    Route::post('/getSingle', [\App\Http\Controllers\ProfessorsController::class, "getSingle"]);
 });
 
 Route::group([
@@ -70,7 +71,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/all', [\App\Http\Controllers\StudentsController::class, "getStudents"]);
-    Route::post('/get_by_group_and_speciality', [\App\Http\Controllers\StudentsController::class, "getByGroupAndSpeciality"]);
+    Route::post('/getSingle', [\App\Http\Controllers\StudentsController::class, "getSingle"]);
 });
 
 Route::group([
