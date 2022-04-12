@@ -140,7 +140,7 @@ class ProfessorsController extends Controller
         ])->get();
 
         if($professor->isEmpty()){
-            return response()->json(["error" => "professor not found"]);
+            return response()->json(["error" => "professor not found"], 404);
         }
 
         return response()->json($professor);
