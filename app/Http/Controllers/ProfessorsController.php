@@ -30,7 +30,7 @@ class ProfessorsController extends Controller
     {
         $subjects = Subject::all()->toArray();
 
-        $professors = Professor::with(["subjects", "position", "user.passport"])
+        $professors = Professor::with(["subjects", "user.passport"])
             ->whereHas("subjects", function ($query){
                 $query->where("subject_id", "!=", null);
             })
@@ -64,7 +64,6 @@ class ProfessorsController extends Controller
             $professors_array = Professor::whereHas("subjects", function ($query) use ($subject_id) { $query->where("subjects.id", "=", $subject_id);})
                 ->with([
                     "user.passport",
-                    "position"
                 ])
                 ->paginate(5);
         }
@@ -72,7 +71,6 @@ class ProfessorsController extends Controller
             $professors_array = Professor::whereHas("subjects")
                 ->with([
                     "user.passport",
-                    "position"
                 ])
                 ->paginate(5);
         }
@@ -85,8 +83,9 @@ class ProfessorsController extends Controller
                 "firstname" => $item->user->passport->firstname,
                 "secondname" => $item->user->passport->secondname,
                 "thirdname" => $item->user->passport->thirdname,
-                "rank" => $item->position->rank,
-                "subjects" => $item->subjects
+                "rank" => $item->position,
+                "subjects" => $item->subjects,
+                "price" => $item->price
             ];
         }
 
