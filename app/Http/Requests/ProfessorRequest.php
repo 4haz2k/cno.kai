@@ -13,7 +13,7 @@ class ProfessorRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +21,35 @@ class ProfessorRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            //
+            "surname" => "required|",//
+            "name" => "required|",//
+            "patronymic" => "",//
+            "telephone" => "required|",//
+            "faculty" => "required|",//
+            "email" => "required|",//
+            "exp" => "",//
+            "date_of_birth" => "",//
+            "position" => "",//
+            "serial" => "",//
+            "number" => "",//
+            "date_of_issue" => "",//
+            "issued_by" => "",//
+            "department_code" => "",//
+            "country" => "",//
+            "state" => "",//
+            "city" => "",//
+            "district" => "",//
+            "street" => "",//
+            "house" => "",//
+            "entrance" => "",//
+            "apt" => "",//
+            "INN" => "",
+            "SNILS" => "",
+            "personal_number" => "",
+            "description" => "",
         ];
     }
 }

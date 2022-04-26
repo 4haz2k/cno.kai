@@ -43,6 +43,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/me', [\App\Http\Controllers\AuthController::class, "me"]);
+    Route::post('/update/professor', [\App\Http\Controllers\UserController::class, "updateProfessorData"]);
 });
 
 Route::group([
@@ -82,6 +83,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::get('/all', [\App\Http\Controllers\SubjectsController::class, "getSubjects"]);
+    Route::post('/add', [\App\Http\Controllers\SubjectsController::class, "addSubjects"]);
 });
 
 Route::group([
@@ -90,6 +92,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/all', [\App\Http\Controllers\GroupsController::class, "getGroups"]);
+    Route::post('/add', [\App\Http\Controllers\GroupsController::class, "addGroup"]);
 });
 
 Route::group([
@@ -98,6 +101,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/all', [\App\Http\Controllers\SpecialitiesController::class, "getSpecialities"]);
+    Route::post('/add', [\App\Http\Controllers\SpecialitiesController::class, "addSpeciality"]);
 });
 
 Route::group([

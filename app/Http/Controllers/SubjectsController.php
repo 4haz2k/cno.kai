@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SubjectRequest;
 use App\Models\Subject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,5 +35,22 @@ class SubjectsController extends Controller
         return response()->json([
             "subjects" => $subjects
         ]);
+    }
+
+    /**
+     * Добавление нового предмета
+     * @param SubjectRequest $request
+     * @return JsonResponse
+     */
+    public function addSubjects(SubjectRequest $request): JsonResponse
+    {
+        $subject = new Subject();
+
+        $subject->title = \request("title");
+        $subject->description = \request("description");
+
+        $subject->save();
+
+        return response()->json(["message" => "data saved success"]);
     }
 }

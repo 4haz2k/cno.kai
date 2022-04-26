@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SpecialityRequest;
 use App\Models\Speciality;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,5 +18,22 @@ class SpecialitiesController extends Controller
     public function getSpecialities(): JsonResponse
     {
         return response()->json(Speciality::all());
+    }
+
+    /**
+     *
+     * Добавление специальности
+     *
+     * @param SpecialityRequest $request
+     * @return JsonResponse
+     */
+    public function addSpeciality(SpecialityRequest $request): JsonResponse
+    {
+        $speciality = new Speciality();
+        $speciality->specialty_title = $request->title;
+        $speciality->faculty = $request->faculty;
+        $speciality->save();
+
+        return response()->json(["message" => "data saved success"]);
     }
 }
