@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Professor;
 use App\Models\Subject;
+use App\Models\SubjectsOfProfessor;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -136,12 +138,46 @@ class ProfessorsController extends Controller
             "user" => function($q){ $q->select(["id", "login", "phone"]); },
             "user.passport" => function($q){ $q->select(["id", "place_of_residence_id", "series", "number", "date_of_issue", "issued", "division_code", "secondname", "firstname", "thirdname", "birthday"]); },
             "user.passport.placeOfResidence",
-        ])->get();
+        ])->first();
 
-        if($professor->isEmpty()){
+        if(!$professor){
             return response()->json(["error" => "professor not found"], 404);
         }
 
         return response()->json($professor);
+    }
+
+    /**
+     * Получение списка преподавателей для страницы преподаватели
+     */
+    public function pageProfessorsList(): JsonResponse
+    {
+        $professors = SubjectsOfProfessor::with([
+            "subject" => function ($q){ $q->select(["id", "title"]); },
+            "professor" => function($q) { $q->select(["id", "position"]);},
+            "professor.user" => function($q) { $q->select(["id"]);},
+            "professor.user.passport" => function ($q) { $q->select(["id", "firstname", "secondname", "thirdname"]);}
+        ]);
+
+        if(\request("subject_id"))
+            $professors = $professors->whereHas("subject", function ($q) { $q->where("id", \request("subject_id")); });
+
+        $professors = $professors
+            ->paginate(\request("page_size") ? : 10)
+            ->toArray();
+
+        unset(
+            $professors["links"],
+            $professors["to"],
+            $professors["prev_page_url"],
+            $professors["path"],
+            $professors["next_page_url"],
+            $professors["last_page_url"],
+            $professors["first_page_url"],
+            $professors["from"],
+            $professors["last_page"]
+        );
+
+        return response()->json($professors);
     }
 }

@@ -52,6 +52,7 @@ Route::group([
 ], function (){
     Route::post('/all', [\App\Http\Controllers\OrdersController::class, "getOrders"]);
     Route::post('/getSingle', [\App\Http\Controllers\OrdersController::class, "getSingleOrder"]);
+    Route::post('/professor/all', [\App\Http\Controllers\OrdersController::class, "getByProfessor"]);
 });
 
 Route::group([
@@ -63,6 +64,7 @@ Route::group([
     Route::get('/get_by_subject_id', [\App\Http\Controllers\ProfessorsController::class, "getProfessorsById"]);
     Route::post('/short/all', [\App\Http\Controllers\ProfessorsController::class, "getShortProfessors"]);
     Route::post('/getSingle', [\App\Http\Controllers\ProfessorsController::class, "getSingle"]);
+    Route::post('/page/all', [\App\Http\Controllers\ProfessorsController::class, "pageProfessorsList"]);
 });
 
 Route::group([

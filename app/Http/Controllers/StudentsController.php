@@ -74,9 +74,9 @@ class StudentsController extends Controller
                 "group" => function ($q) { $q->select(["id", "specialty_id",  "group_code"]); },
                 "group.speciality" => function ($q) { $q->select(["id", "faculty"]); },
             ])
-            ->get();
+            ->first();
 
-        if($student->isEmpty()){
+        if(!$student){
             return response()->json(["error" => "student not found"]);
         }
 

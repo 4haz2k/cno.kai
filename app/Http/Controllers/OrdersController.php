@@ -99,7 +99,15 @@ class OrdersController extends Controller
         return response()->json($data + ["statuses" => ["Ожидает исполнения", "Исполнено"], "total" => $total_pages]);
     }
 
-    public function getSingleOrder(){
+    /**
+     *
+     * Получение одного заказа по id
+     * parms: order_id
+     *
+     * @return JsonResponse
+     */
+    public function getSingleOrder(): JsonResponse
+    {
         $data = Order::where("id", \request("order_id"))
             ->with([
                 "service" => function($q){ $q->select(["id", "title"]); },
@@ -129,5 +137,24 @@ class OrdersController extends Controller
         ]);
 
         return response()->json($data);
+    }
+
+    /**
+     *
+     * Получение списка заказов преподавателя
+     *
+     * @return JsonResponse
+     */
+    public function getByProfessor(): JsonResponse
+    {
+        if(!\request("professor_id")){
+            return response()->json(["error" => "parameter professor_id empty"]);
+        }
+
+        $orders = Order::whereHas("timeTable.subjectOfProfessor.professor", function ($q) { $q->where("id", \request("professor_id")); })
+            ->orderBy("create_date", "DESC")
+            ->get();
+
+        return response()->json($orders);
     }
 }
