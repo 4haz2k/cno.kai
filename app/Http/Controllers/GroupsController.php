@@ -30,7 +30,7 @@ class GroupsController extends Controller
      */
     public function addGroup(GroupRequest $request): JsonResponse
     {
-        $specialty = Speciality::where("faculty", \request("speciality"))->first();
+        $specialty = Speciality::where("id", \request("speciality"))->first();
 
         $subject = new Group();
 

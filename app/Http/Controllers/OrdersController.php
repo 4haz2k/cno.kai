@@ -151,10 +151,32 @@ class OrdersController extends Controller
             return response()->json(["error" => "parameter professor_id empty"]);
         }
 
-        $orders = Order::whereHas("timeTable.subjectOfProfessor.professor", function ($q) { $q->where("id", \request("professor_id")); })
+        $orders = Order::with([
+            "student" => function ($q) { $q->select(["id"]);},
+            "student.user" => function ($q) { $q->select(["id"]);},
+            "student.user.passport" => function ($q) { $q->select(["id", "firstname", "secondname", "thirdname"]);},
+            "timeTable" => function ($q) { $q->select(["id", "subject_of_professor_id"]);},
+            "timeTable.subjectOfProfessor" => function($q){ $q->select(["id", "subject_id", "professor_id"]); },
+            "timeTable.subjectOfProfessor.subject" => function($q){ $q->select(["id", "title"]); },
+        ])
+            ->select(["id", "status", "hash", "student_id", "timetable_id"])
+            ->whereHas("timeTable.subjectOfProfessor.professor", function ($q) { $q->where("id", \request("professor_id")); })
             ->orderBy("create_date", "DESC")
-            ->get();
+            ->paginate(\request("page_size") ? : 10)
+            ->toArray();
 
-        return response()->json($orders);
+        unset(
+            $orders["links"],
+            $orders["to"],
+            $orders["prev_page_url"],
+            $orders["path"],
+            $orders["next_page_url"],
+            $orders["last_page_url"],
+            $orders["first_page_url"],
+            $orders["from"],
+            $orders["last_page"]
+        );
+
+        return response()->json($orders + ["statuses" => ["Ожидает исполнения", "Исполнено"]]);
     }
 }

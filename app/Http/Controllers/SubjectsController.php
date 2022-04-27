@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SubjectOfProfessorRequest;
 use App\Http\Requests\SubjectRequest;
 use App\Models\Subject;
+use App\Models\SubjectsOfProfessor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -52,5 +54,45 @@ class SubjectsController extends Controller
         $subject->save();
 
         return response()->json(["message" => "data saved success"]);
+    }
+
+    /**
+     *
+     * Добавление предмета преподавателю
+     *
+     * @param SubjectOfProfessorRequest $request
+     * @return JsonResponse
+     */
+    public function addSubjectsProfessor(SubjectOfProfessorRequest $request): JsonResponse
+    {
+        $subject_of_professor = new SubjectsOfProfessor();
+
+        $subject_of_professor->subject_id = $request->subject_id;
+        $subject_of_professor->professor_id = $request->professor_id;
+
+        $subject_of_professor->save();
+
+        return response()->json(["message" => "data saved success"]);
+    }
+
+    /**
+     *
+     * Удаление предмета преподавателя
+     *
+     * @return JsonResponse
+     */
+    public function deleteSubjectsProfessor(): JsonResponse
+    {
+        if(!\request("subject_of_professor_id"))
+            return response()->json(["error" => "subject of professor id empty"]);
+
+        $subject_of_professor = SubjectsOfProfessor::find(\request("subject_of_professor_id"));
+
+        if($subject_of_professor)
+            $subject_of_professor->delete();
+        else
+            return response()->json(["error" => "subject of professor not found by id ".\request("subject_of_professor_id")]);
+
+        return response()->json(["message" => "data deleted success"]);
     }
 }

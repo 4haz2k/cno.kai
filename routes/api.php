@@ -44,6 +44,7 @@ Route::group([
 ], function (){
     Route::post('/me', [\App\Http\Controllers\AuthController::class, "me"]);
     Route::post('/update/professor', [\App\Http\Controllers\UserController::class, "updateProfessorData"]);
+    Route::post('/update/student', [\App\Http\Controllers\UserController::class, "updateStudentData"]);
 });
 
 Route::group([
@@ -84,6 +85,8 @@ Route::group([
 ], function (){
     Route::get('/all', [\App\Http\Controllers\SubjectsController::class, "getSubjects"]);
     Route::post('/add', [\App\Http\Controllers\SubjectsController::class, "addSubjects"]);
+    Route::post('/add/professor', [\App\Http\Controllers\SubjectsController::class, "addSubjectsProfessor"]);
+    Route::delete('/delete/professor', [\App\Http\Controllers\SubjectsController::class, "deleteSubjectsProfessor"]);
 });
 
 Route::group([

@@ -7,11 +7,20 @@ use App\Models\Passport;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function updateProfessorData(ProfessorRequest $request){
+    /**
+     *
+     * Обновление данных преподавателя
+     *
+     * @param ProfessorRequest $request
+     * @return JsonResponse
+     */
+    public function updateProfessorData(ProfessorRequest $request): JsonResponse
+    {
         $user = User::find($request->user_id);
 
         if(!$user)
@@ -54,5 +63,9 @@ class UserController extends Controller
         $user->push();
 
         return response()->json(["message" => "data saved success"]);
+    }
+
+    public function updateStudentData(){
+
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GroupRequest extends FormRequest
+class SubjectOfProfessorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class GroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "group" => "required|unique:groups,group_code",
-            "speciality" => "required|exists:specialty,id"
+            "subject_id" => "required|exists:subjects,id",
+            "professor_id" => "required|exists:professors,id",
         ];
     }
 }
