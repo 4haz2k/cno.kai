@@ -80,7 +80,8 @@ class AuthController extends Controller
                     "personal_number" => $user[0]->professor->personnel_number,
 
                     "img" => $user[0]->img,
-                    "role" => $user[0]->role
+                    "role" => $user[0]->role,
+                    "description" => $user[0]->professor->description
                 ];
                 break;
 
