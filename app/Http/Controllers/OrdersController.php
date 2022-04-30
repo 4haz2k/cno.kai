@@ -96,7 +96,7 @@ class OrdersController extends Controller
             $data["last_page"]
         );
 
-        return response()->json($data + ["statuses" => ["Ожидает исполнения", "Исполнено"], "total" => $total_pages]);
+        return response()->json($data + ["statuses" => config('statics.statuses'), "total" => $total_pages]);
     }
 
     /**
@@ -153,7 +153,7 @@ class OrdersController extends Controller
 
         $orders = Order::with([
             "student" => function ($q) { $q->select(["id"]);},
-            "student.user" => function ($q) { $q->select(["id"]);},
+            "student.user" => function ($q) { $q->select(["id", "role"]);},
             "student.user.passport" => function ($q) { $q->select(["id", "firstname", "secondname", "thirdname"]);},
             "timeTable" => function ($q) { $q->select(["id", "subject_of_professor_id"]);},
             "timeTable.subjectOfProfessor" => function($q){ $q->select(["id", "subject_id", "professor_id"]); },
@@ -177,6 +177,6 @@ class OrdersController extends Controller
             $orders["last_page"]
         );
 
-        return response()->json($orders + ["statuses" => ["Ожидает исполнения", "Исполнено"]]);
+        return response()->json($orders + ["statuses" => config('statics.statuses')]);
     }
 }
