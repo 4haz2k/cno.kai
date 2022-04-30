@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ServiceRequest;
 use App\Models\Order;
+use App\Models\Service;
+use App\Models\Speciality;
 use App\Models\Subject;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -143,5 +146,44 @@ class OthersController extends Controller
             ->with("timeTable.subjectOfProfessor.professor.user.passport")
             ->get()
             ->makeHidden(["timeTable.subjectOfProfessor.professor.user.passport.number"]);
+    }
+
+    /**
+     *
+     * Получение списка услуг
+     *
+     * @return JsonResponse
+     */
+    public function getServices(): JsonResponse
+    {
+        return response()->json(Service::all()->makeHidden(["description"]));
+    }
+
+    /**
+     *
+     * Добавление услуги
+     *
+     * @param ServiceRequest $request
+     * @return JsonResponse
+     */
+    public function addService(ServiceRequest $request): JsonResponse
+    {
+        $service = new Service();
+        $service->title = $request->title;
+        $service->save();
+
+        return response()->json(["message" => "data saved success"]);
+    }
+
+    /**
+     *
+     * Получение факультетов
+     *
+     */
+    public function getFaculties(): JsonResponse
+    {
+        $faculties = Speciality::select("faculty")->distinct()->pluck("faculty");
+
+        return response()->json($faculties);
     }
 }
