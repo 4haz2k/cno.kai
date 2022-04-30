@@ -83,15 +83,15 @@ class SubjectsController extends Controller
      */
     public function deleteSubjectsProfessor(): JsonResponse
     {
-        if(!\request("subject_of_professor_id"))
-            return response()->json(["error" => "subject of professor id empty"]);
+        if(!\request("subject_id") or !\request("professor_id"))
+            return response()->json(["error" => "subject_id or professor_id is empty"]);
 
-        $subject_of_professor = SubjectsOfProfessor::find(\request("subject_of_professor_id"));
+        $subject_of_professor = SubjectsOfProfessor::where("subject_id", \request("subject_id"))->where("professor_id", \request("professor_id"))->first();
 
         if($subject_of_professor)
             $subject_of_professor->delete();
         else
-            return response()->json(["error" => "subject of professor not found by id ".\request("subject_of_professor_id")]);
+            return response()->json(["error" => "subject of professor not found by subject_id ".\request("subject_id")." and professor_id ".\request("professor_id")]);
 
         return response()->json(["message" => "data deleted success"]);
     }
