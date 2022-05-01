@@ -23,7 +23,7 @@ class CreateOrdersTable extends Migration
             $table->longText("treaty")->nullable(true)->comment("Договор");
             $table->dateTime("create_date")->comment("Дата создания");
             $table->integer("number_of_lessons")->comment("Кол-во занятий");
-            $table->string("hash")->comment("Хэш договора");
+            $table->string("hash")->nullable(true)->comment("Хэш договора");
 
             //relations
             $table->foreign("student_id")->references("id")->on("students");

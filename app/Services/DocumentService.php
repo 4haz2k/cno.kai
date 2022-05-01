@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Exception\CopyFileException;
@@ -20,7 +21,7 @@ class DocumentService
 
     public function getDocument($order_id): array
     {
-        $order = Order::find($order_id)->with([
+        $order = Order::where("id", $order_id)->with([
             "student.user.passport.placeOfResidence",
             "student.group",
             "service",
@@ -158,7 +159,7 @@ class DocumentService
         $document = $this->saveDocument($tags, $order_id);
 
         if($document["info"] == "Document saved success"){
-            $order = Order::find($order_id);
+            $order = Order::where("id", $order_id)->first();
             $order->treaty = $document["link"];
             $order->update();
 
@@ -179,9 +180,7 @@ class DocumentService
      */
     private function replaceAllTags(array $data, $document){
         foreach ($data as $datum) {
-
             $word = new TextRun();
-
 
             $word->addText($datum["word"], [
                 "bold" => $datum["bold"],
@@ -216,6 +215,7 @@ class DocumentService
         try {
             $document = new TemplateProcessor($path);
         } catch (CopyFileException | CreateTemporaryFileException $e) {
+            Log::error("FILE STORE ERROR: ".$e->getMessage());
             return ["status" => false, "info" => "error: ".$e->getMessage()];
         }
 

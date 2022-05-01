@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\OrderRequest;
 use App\Models\Order;
+use App\Models\Professor;
+use App\Models\TimeTable;
+use App\Services\DocumentService;
+use App\Services\SecurityService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -180,7 +186,48 @@ class OrdersController extends Controller
         return response()->json($orders + ["statuses" => config('statics.statuses')]);
     }
 
-    public function createOrder(){
+    /**
+     *
+     * Создание заявки
+     *
+     * @param OrderRequest $request
+     * @return JsonResponse
+     */
+    public function createOrder(OrderRequest $request): JsonResponse
+    {
+        $timetable = TimeTable::with("subjectOfProfessor.professor")->where("id", $request->timetable_id)->first();
+        $price = $timetable->subjectOfProfessor->professor->price;
 
+        // Сохранение нового заказа
+        $order = new Order();
+        $order->student_id = $request->student_id;
+        $order->timetable_id = $request->timetable_id;
+        $order->service_id = $request->service_id;
+        $order->status = "Ожидает исполнения";
+        $order->price = bcdiv($price * (double)$request->number_of_hours, 1, 2);
+
+        $currentTime = Carbon::now();
+        $order->create_date = $currentTime->toDateTimeString();
+
+        $order->number_of_lessons = $request->number_of_hours;
+
+        $order->save();
+
+        // сохранение хэша
+        $security = new SecurityService();
+        $order->hash = $security->encryptData($order->id);
+        $order->update();
+
+        // Создание документа
+        $document = new DocumentService();
+        $result = $document->getDocument($order->id);
+
+        // Ответ
+        if($result["status"]){
+            return response()->json(["message" => "order created"]);
+        }
+        else{
+            return response()->json(["message" => "order created, but failed to create file"]);
+        }
     }
 }
