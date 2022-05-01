@@ -179,4 +179,8 @@ class OrdersController extends Controller
 
         return response()->json($orders + ["statuses" => config('statics.statuses')]);
     }
+
+    public function createOrder(){
+
+    }
 }

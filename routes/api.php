@@ -55,6 +55,7 @@ Route::group([
     Route::post('/all', [\App\Http\Controllers\OrdersController::class, "getOrders"]);
     Route::post('/getSingle', [\App\Http\Controllers\OrdersController::class, "getSingleOrder"]);
     Route::post('/professor/all', [\App\Http\Controllers\OrdersController::class, "getByProfessor"]);
+    Route::post('/create', [\App\Http\Controllers\OrdersController::class, "createOrder"]);
 });
 
 Route::group([
