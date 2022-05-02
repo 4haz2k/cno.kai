@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfessorOrAdminRequest;
+use App\Http\Requests\RegistrationRequest;
 use App\Models\Address;
 use App\Models\Passport;
 use App\Models\User;
@@ -15,15 +16,15 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
-    }
+//    /**
+//     * Create a new AuthController instance.
+//     *
+//     * @return void
+//     */
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
+//    }
 
     /**
      * Get a JWT via given credentials.
@@ -107,10 +108,10 @@ class AuthController extends Controller
 
     /**
      * User registration
-     * @param Request $request
+     * @param RegistrationRequest $request
      * @return JsonResponse
      */
-    public function registration(Request $request): JsonResponse
+    public function registration(RegistrationRequest $request): JsonResponse
     {
         $request = $request->all();
         // Валидация адреса
@@ -301,15 +302,5 @@ class AuthController extends Controller
     public function guard()
     {
         return Auth::guard();
-    }
-
-    /**
-     *
-     * Добавление проподавателя / админа
-     *
-     * @param ProfessorOrAdminRequest $request
-     */
-    public function registerProfessorOrAdmin(ProfessorOrAdminRequest $request){
-
     }
 }

@@ -6,6 +6,7 @@ use App\Services\DocumentService;
 use App\Services\SecurityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class ActionTest extends TestCase
@@ -78,6 +79,63 @@ class ActionTest extends TestCase
 
         $response = $this->call("POST", "/api/professors/getSingle", $parameters);
         $response->assertStatus(200);
+    }
+
+    /**
+     *
+     * Тестирование регистрации препода / админа
+     *
+     * @test
+     */
+    public function test_registration(){
+        $data = [
+            "email" => "",
+            "telephone" => "",
+            "password" => "",
+            "passport" => [
+                "name" => "",
+                "surname" => "",
+                "patronymic" => "",
+                "date_of_birth" => "",
+                "sex" => "",
+                "serial" => "",
+                "number" => "",
+                "issued_by" => "",
+                "date_of_issue" => "",
+                "department_code" => "",
+                "place_of_residence" => [
+                    "country" => "",
+                    "region" => "",
+                    "locality" => "",
+                    "district" => "",
+                    "street" => "",
+                    "house" => "",
+                    "frame" => "",
+                    "apartment" => "",
+                ],
+            ],
+            "the_same_address" => true,
+            "place_of_residence" => [
+                "country" => "",
+                "region" => "",
+                "locality" => "",
+                "district" => "",
+                "street" => "",
+                "house" => "",
+                "frame" => "",
+                "apartment" => "",
+            ],
+            "role" => "",
+            "position" => "",
+            "faculty" => "",
+            "personal_number" => 123456789012,
+            "INN" => 123456789012,
+            "SNILS" => 12345678901,
+            "exp" => "",
+        ];
+
+        $this->json('post', 'api/auth/registration', $data)
+            ->assertJson(["status" => true]);
     }
 
 }
