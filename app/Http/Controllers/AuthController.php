@@ -6,6 +6,8 @@ use App\Http\Requests\ProfessorOrAdminRequest;
 use App\Http\Requests\RegistrationRequest;
 use App\Models\Address;
 use App\Models\Passport;
+use App\Models\Professor;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -113,118 +115,87 @@ class AuthController extends Controller
      */
     public function registration(RegistrationRequest $request): JsonResponse
     {
-        $request = $request->all();
-        // Валидация адреса
-        $address_request = [
-            "country" => $request['actual_living_place']['country'],
-            "state" => $request['actual_living_place']['state'],
-            "city" => $request['actual_living_place']['city'],
-            "district" => $request['actual_living_place']['district'],
-            "street" => $request['actual_living_place']['street'],
-            "house" => $request['actual_living_place']['house'],
-            "entrance" => $request['actual_living_place']['entrance'],
-            "apt" => $request['actual_living_place']['apt'],
-        ];
-
-        $address_validator = Validator::make($address_request, Address::rules());
-
-        // Валидация паспорта
-        $passport_validation = [
-            "serial" => $request['passport']['serial'], // series
-            "number" => $request['passport']['number'],
-            "date_of_issue" => $request['passport']['date_of_issue'],
-            "issued_by" => $request['passport']['issued_by'], // issued
-            "department_code" => $request['passport']['department_code'], // division_code
-            "scan" => $request['passport']['scan'],
-            //"place_of_residence_id" => $address->id,
-            "surname" => $request['passport']['surname'], // secondname
-            "name" => $request['passport']['name'], // firstname
-            "patronymic" => $request['passport']['patronymic'], // thirdname
-            "date_of_birth" => $request['passport']['date_of_birth'], // birthday
-            "sex" => $request['passport']['sex'],
-        ];
-
-        $passport_validator = Validator::make($passport_validation, Passport::rules());
-
-        // валидация пользователя
-        $user_validation = [
-            "actual_place_of_residence_id" => request('actual_place_of_residence_id'),
-            "email" => $request['email'],
-            'password' => $request['password'],
-            "telephone" => $request['telephone'],
-            "role" => "student",
-        ];
-
-        $user_validator = Validator::make($user_validation, User::rules());
-
-        if($address_validator->fails() or $passport_validator->fails() or $user_validator->fails()){ // если проверка не пройдена
-            $errors = ["errors" => []];
-
-            if($address_validator->fails())
-                array_push($errors["errors"], [
-                    "error_address" => [
-                        "message" => "Address validation error",
-                        "errors" => $address_validator->messages()->get("*")
-                    ]
-                ]);
-
-            if($passport_validator->fails())
-                array_push($errors["errors"], [
-                    "error_passport" => [
-                        "message" => "Passport validation error",
-                        "errors" => $passport_validator->messages()->get("*")
-                    ]
-                ]);
-
-            if($user_validator->fails())
-                array_push($errors["errors"], [
-                    "error_user" => [
-                        "message" => "User validation error",
-                        "errors" => $address_validator->messages()->get("*")
-                    ]
-                ]);
-
-
-            return response()->json($errors); // возвращаем ошибки
-        }
-
         // Регистрируем новый адрес
         $address = new Address();
-        $address->country = $address_request["country"];
-        $address->region = $address_request["state"];
-        $address->locality = $address_request["city"];
-        $address->district = $address_request["district"];
-        $address->street = $address_request["street"];
-        $address->house = $address_request["house"];
-        $address->frame = $address_request["entrance"];
-        $address->apartment = $address_request["apt"];
+        $address->country = \request("passport.place_of_residence.country");
+        $address->region = \request("passport.place_of_residence.region");
+        $address->locality = \request("passport.place_of_residence.locality");
+        $address->district = \request("passport.place_of_residence.district");
+        $address->street = \request("passport.place_of_residence.street");
+        $address->house = \request("passport.place_of_residence.house");
+        $address->frame = \request("passport.place_of_residence.frame");
+        $address->apartment = \request("passport.place_of_residence.apartment");
         $address->save();
+
+        // Если не проживает по месту прописки
+        if($request->the_same_address == false){
+            $address_to_user = new Address();
+            $address_to_user->country = \request("place_of_residence.country");
+            $address_to_user->region = \request("place_of_residence.region");
+            $address_to_user->locality = \request("place_of_residence.locality");
+            $address_to_user->district = \request("place_of_residence.district");
+            $address_to_user->street = \request("place_of_residence.street");
+            $address_to_user->house = \request("place_of_residence.house");
+            $address_to_user->frame = \request("place_of_residence.frame");
+            $address_to_user->apartment = \request("place_of_residence.apartment");
+            $address_to_user->save();
+        }
 
         // регистрируем новый паспорт
         $passport = new Passport();
-        $passport->series = $passport_validation["serial"];
-        $passport->number = $passport_validation["number"];
-        $passport->date_of_issue = $passport_validation["date_of_issue"];
-        $passport->issued = $passport_validation["issued_by"];
-        $passport->division_code = $passport_validation["department_code"];
-        $passport->scan = $passport_validation["scan"];
+        $passport->series = \request("passport.serial");
+        $passport->number = \request("passport.number");
+        $passport->date_of_issue = date('Y-m-d', strtotime(\request("passport.date_of_issue")));
+        $passport->issued = \request("passport.issued_by");
+        $passport->division_code = \request("passport.department_code");
+        $passport->scan = "*scan*";
         $passport->place_of_residence_id = $address->id;
-        $passport->secondname = $passport_validation["surname"];
-        $passport->firstname = $passport_validation["name"];
-        $passport->thirdname = $passport_validation["patronymic"];
-        $passport->birthday = $passport_validation["date_of_birth"];
-        $passport->sex = $passport_validation["sex"];
+        $passport->secondname = \request("passport.surname");
+        $passport->firstname = \request("passport.name");
+        $passport->thirdname = \request("passport.patronymic");
+        $passport->birthday = date('Y-m-d', strtotime(\request("passport.date_of_birth")));
+        $passport->sex = \request("passport.sex");
         $passport->save();
 
         // регистрируем нового пользователя
         $user = new User();
         $user->id = $passport->id;
-        $user->login = $user_validation["email"];
-        $user->password = Hash::make($user_validation["password"]);
-        $user->phone = $user_validation["telephone"];
-        $user->role = $user_validation["role"];
-        $user->actual_place_of_residence_id = $address->id;
+        $user->login = \request("email");
+        $user->password = Hash::make(\request("password"));
+        $user->phone = \request("telephone");
+        $user->role = \request("role");
+
+        if($request->the_same_address == false){
+            $user->actual_place_of_residence_id = $address_to_user->id;
+        }
+        else{
+            $user->actual_place_of_residence_id = $address->id;
+        }
+
         $user->save();
+
+        // Если роль препода
+        if($request->role == "PREPOD"){
+            $professor = new Professor();
+            $professor->id = $user->id;
+            $professor->position = \request("position");
+            $professor->personnel_number = \request("personal_number");
+            $professor->ITN = \request("INN");
+            $professor->INILA = \request("SNILS");
+            $professor->department = \request("faculty");
+            $professor->date_of_commencement_of_teaching_activity = date('Y-m-d', strtotime(\request("exp")));
+            $professor->price = \request("price");
+            $professor->save();
+        }
+
+        // Если роль студента
+        if($request->role == "STUDENT"){
+            $student = new Student();
+            $student->id = $user->id;
+            $student->group_id = \request("group_id");
+            $student->receipt_date = date('Y-m-d', strtotime(\request("receipt_date")));
+            $student->save();
+        }
 
         // регистрация
         return response()->json([

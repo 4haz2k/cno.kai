@@ -26,7 +26,7 @@ class RegistrationRequest extends FormRequest
         $positions = implode(",", config("statics.positions"));
 
         return [
-            "email" => "required|email",
+            "email" => "required|email|unique:users,login",
             "telephone" => [
                 "required",
                 "size:11",
@@ -88,7 +88,7 @@ class RegistrationRequest extends FormRequest
             ],
             "passport.place_of_residence.frame" => ["regex:/(^[А-Я]?[а-я0-9]+$)|(^[A-Z]?[a-z0-9]+$)/u"],
             "passport.place_of_residence.apartment" => ["regex:/(^[А-Я]?[а-я0-9]+$)|(^[A-Z]?[a-z0-9]+$)/u"],
-            "the_same_address" => "boolean",
+            "the_same_address" => "required|boolean",
             "place_of_residence.country" => [
                 "required_if:the_same_address,0,false",
                 "regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"
@@ -110,9 +110,15 @@ class RegistrationRequest extends FormRequest
                 "regex:/^([а-яА-Я]+ ?)+$/"
             ],
             "personal_number" => "required_if:role,0,PREPOD|integer|numeric|digits:12",
-            "INN" => "required_if:role,0,PREPOD|digits:12|integer|numeric",
-            "SNILS" => "required_if:role,0,PREPOD|digits:11|integer|numeric",
+            "INN" => "required_if:role,0,PREPOD|digits:12|integer|numeric|unique:professors,ITN",
+            "SNILS" => "required_if:role,0,PREPOD|digits:11|integer|numeric|unique:professors,INILA",
             "exp" => "required_if:role,0,PREPOD|date_format:d.m.Y",
+            "price" => [
+                "required_if:role,0,PREPOD",
+                "regex:/^\d+(\.\d{1,2})?$/"
+            ],
+            "group_id" => "required_if:role,0,STUDENT|exists:groups,id",
+            "receipt_date" => "required_if:role,0,STUDENT|date_format:d.m.Y",
         ];
     }
 }
