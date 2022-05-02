@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfessorOrAdminRequest;
 use App\Models\Address;
 use App\Models\Passport;
 use App\Models\User;
@@ -300,5 +301,15 @@ class AuthController extends Controller
     public function guard()
     {
         return Auth::guard();
+    }
+
+    /**
+     *
+     * Добавление проподавателя / админа
+     *
+     * @param ProfessorOrAdminRequest $request
+     */
+    public function registerProfessorOrAdmin(ProfessorOrAdminRequest $request){
+
     }
 }

@@ -224,10 +224,10 @@ class OrdersController extends Controller
 
         // Ответ
         if($result["status"]){
-            return response()->json(["message" => "order created"]);
+            return response()->json(["order_id" => $order->id, "message" => "order created"]);
         }
         else{
-            return response()->json(["message" => "order created, but failed to create file"]);
+            return response()->json(["order_id" => $order->id,"message" => "order created, but failed to create file"]);
         }
     }
 }

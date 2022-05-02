@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SubjectRequest extends FormRequest
+class ProfessorOrAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,7 @@ class SubjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|unique:subjects,title|regex:/^([а-яА-Яa-zA-Z]+ ?)+$/g",
-            "description" => "max:200|regex:/^([а-яА-Яa-zA-Z-_.!;0-9]+ ?)+$/g"
+            //
         ];
     }
 }

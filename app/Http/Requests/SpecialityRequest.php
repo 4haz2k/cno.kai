@@ -24,8 +24,8 @@ class SpecialityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|unique:specialty,specialty_title",
-            "faculty" => "required"
+            "title" => "required|unique:specialty,specialty_title|regex:/^([а-яА-Я]+ ?)+$/g",
+            "faculty" => "required|regex:/^([а-яА-Я]+ ?)+$/g"
         ];
     }
 }

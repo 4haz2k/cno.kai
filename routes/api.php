@@ -33,6 +33,7 @@ Route::group([
 ], function () {
     Route::post('/login', [\App\Http\Controllers\AuthController::class, "login"]);
     Route::post('/registration', [\App\Http\Controllers\AuthController::class, "registration"]);
+    Route::post('/registration/professor_or_admin', [\App\Http\Controllers\AuthController::class, "registerProfessorOrAdmin"]);
 //    Route::post('/logout', [\App\Http\Controllers\AuthController::class, "logout"]);
 //    Route::post('/refresh', [\App\Http\Controllers\AuthController::class, "refresh"]);
 });
