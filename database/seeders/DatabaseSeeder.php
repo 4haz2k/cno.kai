@@ -77,12 +77,12 @@ class DatabaseSeeder extends Seeder
         for($i = 1; $i <= 20; $i++){
             array_push($user_students,
                 [
-                "id" => $i,
-                "actual_place_of_residence_id" => Address::all()->random()->id,
-                "login" => $this->faker->email,
-                "password" => Hash::make("password"),
-                "phone" => $this->faker->phoneNumber,
-                "role" => "STUDENT"
+                    "id" => $i,
+                    "actual_place_of_residence_id" => Address::all()->random()->id,
+                    "login" => $this->faker->email,
+                    "password" => Hash::make("password"),
+                    "phone" => $this->faker->phoneNumber,
+                    "role" => "STUDENT"
                 ]);
         }
 
@@ -238,8 +238,30 @@ class DatabaseSeeder extends Seeder
 
         Student::insert($students);
 
-        // Должности, тарифы, услуги
-        Service::factory(90)->create();
+        // Услуги
+        $services = [
+            [
+                "title" => "Дополнительное занятие",
+                "description" => "Это поле описания, тестовая часть"
+            ],
+            [
+                "title" => "Сдача экзамена",
+                "description" => "Это поле описания, тестовая часть"
+            ],
+            [
+                "title" => "Сдача лабораторных работ",
+                "description" => "Это поле описания, тестовая часть"
+            ],
+            [
+                "title" => "Сдача долгов",
+                "description" => "Это поле описания, тестовая часть"
+            ],
+            [
+                "title" => "Сдача зачёта",
+                "description" => "Это поле описания, тестовая часть"
+            ],
+        ];
+        Service::insert($services);
 
         // преподаватели(таблица)
         $professors = [];
@@ -248,9 +270,7 @@ class DatabaseSeeder extends Seeder
             array_push($professors, [
                 "id" => $i,
                 "position" => $this->faker->randomElement(["Заведующий кафедры", "Преподаватель", "Лаборант"]),
-                "personnel_number" => $this->faker->numberBetween(1, 10000),
-                "ITN" => $this->faker->numberBetween(7000000000, 8000000000),
-                "INILA" => $this->faker->numberBetween(10000000000, 99999999999),
+                "personal_number" => $this->faker->numberBetween(1, 10000),
                 "department" => $this->faker->randomElement(["ИКТЗИ", "СПО ИКТЗИ", "ИИЭП", "ФИЗМАТ"]),
                 "date_of_commencement_of_teaching_activity" => $this->faker->date(),
                 "description" => "Это поле с описанием преподавателя",
@@ -309,8 +329,10 @@ class DatabaseSeeder extends Seeder
         // предметы преподавателей
         SubjectsOfProfessor::factory(30)->create();
 
+        TimeTable::factory(400)->create();
+
         // заказы
-        Order::factory(50)->create();
+        //Order::factory(50)->create();
 
 
 //        Address::factory(90)->create();

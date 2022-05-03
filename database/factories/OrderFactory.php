@@ -25,7 +25,6 @@ class OrderFactory extends Factory
             "service_id" => Service::all()->random()->id,
             "status" => $this->faker->randomElement(["Ожидает исполнения", "Исполнено"]),
             "price" => $this->faker->randomFloat(2, 200, 5000),
-            "treaty" => "*treaty link*",
             "create_date" => $this->faker->dateTime,
             "number_of_lessons" => $this->faker->numberBetween(1, 10)
         ];

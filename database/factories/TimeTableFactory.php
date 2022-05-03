@@ -19,7 +19,7 @@ class TimeTableFactory extends Factory
     {
         return [
             "subject_of_professor_id" => SubjectsOfProfessor::all()->random()->id,
-            "date" => $this->faker->date(),
+            "date" => $this->faker->dateTimeBetween("now", "+6 months", "Europe/Moscow"),
             "classroom" => $this->faker->numberBetween(100, 999),
             "building" => $this->faker->randomElement(["7", "5", "2", "1", "3", "8"])
         ];

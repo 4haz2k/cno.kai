@@ -20,7 +20,6 @@ class CreateUsersTable extends Migration
             $table->string("password")->comment("Пароль");
             $table->string("phone")->comment("Телефон");
             $table->string("role")->comment("Роль в системе");
-            $table->string("img")->nullable(true)->comment("Изображение профиля");
 
             //relations
             $table->foreign("id")->references("id")->on("passports")->onDelete("cascade");

@@ -16,9 +16,7 @@ class CreateProfessorsTable extends Migration
         Schema::create('professors', function (Blueprint $table) {
             $table->id()->comment("ID преподавателя");
             $table->string("position")->comment("Должность");
-            $table->bigInteger("personnel_number")->comment("Табельный номер");
-            $table->bigInteger("ITN")->comment("ИНН");
-            $table->bigInteger("INILA")->comment("СНИЛС");
+            $table->bigInteger("personal_number")->comment("Табельный номер");
             $table->string("department")->comment("Кафедра");
             $table->date("date_of_commencement_of_teaching_activity")->comment("Дата начала преподавательской деятельности");
             $table->string("description")->nullable(true)->comment("Описание");

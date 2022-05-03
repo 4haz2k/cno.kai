@@ -16,7 +16,7 @@ class CreateAddressesTable extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id()->comment("ID адреса");
             $table->string("country")->comment("Страна");
-            $table->string("region")->comment("Область/край/республика");
+            $table->string("region")->nullable(true)->comment("Область/край/республика");
             $table->string("locality")->comment("Населенный пункт");
             $table->string("district")->nullable(true)->comment("Район");
             $table->string("street")->comment("Улица");
