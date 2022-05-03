@@ -58,13 +58,15 @@ class RegistrationRequest extends FormRequest
             ],
             "passport.issued_by" => [
                 "required",
-                "regex:/^([а-яА-Яa-zA-Z]+ ?)+$/u"
+                //"regex:/^([а-яА-Яa-zA-Z]+ ?)+$/u"
             ],
             "passport.date_of_issue" => "required|date_format:d.m.Y",
             "passport.department_code" => [
                 "required",
-                "regex:/^\d{4}$/"
+                //"regex:/^\d{4}$/"
             ],
+            "passport.INN" => "required|digits:12|integer|numeric|unique:passports,ITN",
+            "passport.SNILS" => "required|digits:11|integer|numeric|unique:passports,INILA",
             "passport.place_of_residence.country" => [
                 "required",
                 "regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"
@@ -80,6 +82,7 @@ class RegistrationRequest extends FormRequest
                 "regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"
             ],
             "passport.place_of_residence.street" => [
+                "required",
                 "regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"
             ],
             "passport.place_of_residence.house" => [
@@ -94,9 +97,15 @@ class RegistrationRequest extends FormRequest
                 "regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"
             ],
             "place_of_residence.region" => ["regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"],
-            "place_of_residence.locality" => ["regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"],
+            "place_of_residence.locality" => [
+                "required_if:the_same_address,0,false",
+                "regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"
+            ],
             "place_of_residence.district" => ["regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"],
-            "place_of_residence.street" => ["regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"],
+            "place_of_residence.street" => [
+                "required_if:the_same_address,0,false",
+                "regex:/(^([А-Я]?[а-я]+\s?){0,5}\S$)|(^([A-Z]?[a-z]+\s?){0,5}\S$)/u"
+            ],
             "place_of_residence.house" => [
                 "required_if:the_same_address,0,false",
                 "regex:/(^[А-Я]?[а-я0-9]+$)|(^[A-Z]?[a-z0-9]+$)/u"
@@ -109,9 +118,7 @@ class RegistrationRequest extends FormRequest
                 "required_if:role,0,PREPOD",
                 "regex:/^([а-яА-Я]+ ?)+$/"
             ],
-            "personal_number" => "required_if:role,0,PREPOD|integer|numeric|digits:12",
-            "INN" => "required_if:role,0,PREPOD|digits:12|integer|numeric|unique:professors,ITN",
-            "SNILS" => "required_if:role,0,PREPOD|digits:11|integer|numeric|unique:professors,INILA",
+            "personal_number" => "required_if:role,0,PREPOD|integer|numeric",
             "exp" => "required_if:role,0,PREPOD|date_format:d.m.Y",
             "price" => [
                 "required_if:role,0,PREPOD",
