@@ -144,7 +144,7 @@ class ProfessorsController extends Controller
         $professor = Professor::where("id", \request("professor_id"))
         ->with([
             "user" => function($q){ $q->select(["id", "login", "phone"]); },
-            "user.passport" => function($q){ $q->select(["id", "place_of_residence_id", "series", "number", "date_of_issue", "issued", "division_code", "secondname", "firstname", "thirdname", "birthday"]); },
+            "user.passport" => function($q){ $q->select(["id", "place_of_residence_id", "series", "number", "date_of_issue", "issued", "division_code", "ITN", "INILA", "secondname", "firstname", "thirdname", "birthday"]); },
             "user.passport.placeOfResidence",
         ])->first();
 

@@ -154,6 +154,20 @@ class DocumentService
                 "underline" => 'single',
                 "size" => 9
             ],
+            [
+                "tag" => "order_id",
+                "word" => $order->id,
+                "bold" => true,
+                "underline" => 'single',
+                "size" => 9
+            ],
+            [
+                "tag" => "order_id_n",
+                "word" => $order->id,
+                "bold" => false,
+                "underline" => false,
+                "size" => 9
+            ],
         ];
 
         $document = $this->saveDocument($tags, $order_id);

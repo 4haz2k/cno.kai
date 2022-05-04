@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property array|Application|int|mixed|null id
+ * @property array|Application|mixed|string|null group_id
+ * @property false|mixed|string receipt_date
+ */
 class Student extends Model
 {
     use HasFactory;

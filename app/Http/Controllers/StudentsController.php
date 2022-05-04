@@ -69,7 +69,7 @@ class StudentsController extends Controller
         $student = Student::where("id", \request("student_id"))
             ->with([
                 "user" => function($q){ $q->select(["id", "login", "phone"]); },
-                "user.passport" => function($q){ $q->select(["id", "place_of_residence_id", "series", "number", "date_of_issue", "issued", "division_code", "secondname", "firstname", "thirdname", "birthday"]); },
+                "user.passport" => function($q){ $q->select(["id", "place_of_residence_id", "series", "number", "date_of_issue", "issued", "division_code", "ITN", "INILA", "secondname", "firstname", "thirdname", "birthday"]); },
                 "user.passport.placeOfResidence",
                 "group" => function ($q) { $q->select(["id", "specialty_id",  "group_code"]); },
                 "group.speciality" => function ($q) { $q->select(["id", "faculty"]); },

@@ -1,29 +1,23 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FilesController;
+use App\Http\Controllers\GroupsController;
+use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\OthersController;
+use App\Http\Controllers\ProfessorsController;
+use App\Http\Controllers\SpecialitiesController;
+use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\SubjectsController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
 
 Route::group([
     'middleware' => 'api',
     'prefix' => 'download',
     'namespace' => 'App\Http\Controllers',
 ], function () {
-    Route::get('/treaty', [\App\Http\Controllers\FilesController::class, "getTreaty"]);
+    Route::get('/treaty', [FilesController::class, "getTreaty"]);
 });
 
 Route::group([
@@ -31,11 +25,9 @@ Route::group([
     'prefix' => 'auth',
     'namespace' => 'App\Http\Controllers',
 ], function () {
-    Route::post('/login', [\App\Http\Controllers\AuthController::class, "login"]);
-    Route::post('/registration', [\App\Http\Controllers\AuthController::class, "registration"]);
-    Route::post('/registration/professor_or_admin', [\App\Http\Controllers\AuthController::class, "registerProfessorOrAdmin"]);
-//    Route::post('/logout', [\App\Http\Controllers\AuthController::class, "logout"]);
-//    Route::post('/refresh', [\App\Http\Controllers\AuthController::class, "refresh"]);
+    Route::post('/login', [AuthController::class, "login"]);
+    Route::post('/registration', [AuthController::class, "registration"]);
+    Route::post('/profileEdit', [AuthController::class, "profileEdit"]);
 });
 
 Route::group([
@@ -43,9 +35,9 @@ Route::group([
     'prefix' => 'user',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/me', [\App\Http\Controllers\AuthController::class, "me"]);
-    Route::post('/update/professor', [\App\Http\Controllers\UserController::class, "updateProfessorData"]);
-    Route::post('/update/student', [\App\Http\Controllers\UserController::class, "updateStudentData"]);
+    Route::post('/me', [AuthController::class, "me"]);
+    Route::post('/update/professor', [UserController::class, "updateProfessorData"]);
+    Route::post('/update/student', [UserController::class, "updateStudentData"]);
 });
 
 Route::group([
@@ -53,10 +45,10 @@ Route::group([
     'prefix' => 'orders',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/all', [\App\Http\Controllers\OrdersController::class, "getOrders"]);
-    Route::post('/getSingle', [\App\Http\Controllers\OrdersController::class, "getSingleOrder"]);
-    Route::post('/professor/all', [\App\Http\Controllers\OrdersController::class, "getByProfessor"]);
-    Route::post('/create', [\App\Http\Controllers\OrdersController::class, "createOrder"]);
+    Route::post('/all', [OrdersController::class, "getOrders"]);
+    Route::post('/getSingle', [OrdersController::class, "getSingleOrder"]);
+    Route::post('/professor/all', [OrdersController::class, "getByProfessor"]);
+    Route::post('/create', [OrdersController::class, "createOrder"]);
 });
 
 Route::group([
@@ -64,13 +56,13 @@ Route::group([
     'prefix' => 'professors',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/all_with_subjects', [\App\Http\Controllers\ProfessorsController::class, "getProfessors"]);
-    Route::get('/get_by_subject_id', [\App\Http\Controllers\ProfessorsController::class, "getProfessorsById"]);
-    Route::post('/short/all', [\App\Http\Controllers\ProfessorsController::class, "getShortProfessors"]);
-    Route::post('/getSingle', [\App\Http\Controllers\ProfessorsController::class, "getSingle"]);
-    Route::post('/page/all', [\App\Http\Controllers\ProfessorsController::class, "pageProfessorsList"]);
-    Route::post('/positions/all', [\App\Http\Controllers\ProfessorsController::class, "positionsList"]);
-    Route::post('/timetable', [\App\Http\Controllers\ProfessorsController::class, "getProfessorTimeTable"]);
+    Route::post('/all_with_subjects', [ProfessorsController::class, "getProfessors"]);
+    Route::get('/get_by_subject_id', [ProfessorsController::class, "getProfessorsById"]);
+    Route::post('/short/all', [ProfessorsController::class, "getShortProfessors"]);
+    Route::post('/getSingle', [ProfessorsController::class, "getSingle"]);
+    Route::post('/page/all', [ProfessorsController::class, "pageProfessorsList"]);
+    Route::post('/positions/all', [ProfessorsController::class, "positionsList"]);
+    Route::post('/timetable', [ProfessorsController::class, "getProfessorTimeTable"]);
 });
 
 Route::group([
@@ -78,8 +70,8 @@ Route::group([
     'prefix' => 'students',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/all', [\App\Http\Controllers\StudentsController::class, "getStudents"]);
-    Route::post('/getSingle', [\App\Http\Controllers\StudentsController::class, "getSingle"]);
+    Route::post('/all', [StudentsController::class, "getStudents"]);
+    Route::post('/getSingle', [StudentsController::class, "getSingle"]);
 });
 
 Route::group([
@@ -87,10 +79,10 @@ Route::group([
     'prefix' => 'subjects',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::get('/all', [\App\Http\Controllers\SubjectsController::class, "getSubjects"]);
-    Route::post('/add', [\App\Http\Controllers\SubjectsController::class, "addSubjects"]);
-    Route::post('/add/professor', [\App\Http\Controllers\SubjectsController::class, "addSubjectsProfessor"]);
-    Route::delete('/delete/professor', [\App\Http\Controllers\SubjectsController::class, "deleteSubjectsProfessor"]);
+    Route::get('/all', [SubjectsController::class, "getSubjects"]);
+    Route::post('/add', [SubjectsController::class, "addSubjects"]);
+    Route::post('/add/professor', [SubjectsController::class, "addSubjectsProfessor"]);
+    Route::delete('/delete/professor', [SubjectsController::class, "deleteSubjectsProfessor"]);
 });
 
 Route::group([
@@ -98,8 +90,8 @@ Route::group([
     'prefix' => 'groups',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/all', [\App\Http\Controllers\GroupsController::class, "getGroups"]);
-    Route::post('/add', [\App\Http\Controllers\GroupsController::class, "addGroup"]);
+    Route::post('/all', [GroupsController::class, "getGroups"]);
+    Route::post('/add', [GroupsController::class, "addGroup"]);
 });
 
 Route::group([
@@ -107,8 +99,8 @@ Route::group([
     'prefix' => 'specialities',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/all', [\App\Http\Controllers\SpecialitiesController::class, "getSpecialities"]);
-    Route::post('/add', [\App\Http\Controllers\SpecialitiesController::class, "addSpeciality"]);
+    Route::post('/all', [SpecialitiesController::class, "getSpecialities"]);
+    Route::post('/add', [SpecialitiesController::class, "addSpeciality"]);
 });
 
 Route::group([
@@ -116,8 +108,8 @@ Route::group([
     'prefix' => 'other',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/statistic/orders', [\App\Http\Controllers\OthersController::class, "getStatistic"]);
-    Route::post('/services', [\App\Http\Controllers\OthersController::class, "getServices"]);
-    Route::post('/services/add', [\App\Http\Controllers\OthersController::class, "addService"]);
-    Route::post('/faculties', [\App\Http\Controllers\OthersController::class, "getFaculties"]);
+    Route::post('/statistic/orders', [OthersController::class, "getStatistic"]);
+    Route::post('/services', [OthersController::class, "getServices"]);
+    Route::post('/services/add', [OthersController::class, "addService"]);
+    Route::post('/faculties', [OthersController::class, "getFaculties"]);
 });

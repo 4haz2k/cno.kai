@@ -203,7 +203,7 @@ class OrdersController extends Controller
         $order->student_id = $request->student_id;
         $order->timetable_id = $request->timetable_id;
         $order->service_id = $request->service_id;
-        $order->status = "Ожидает исполнения";
+        $order->status = "Проверка";
         $order->price = bcdiv($price * (double)$request->number_of_hours, 1, 2);
 
         $currentTime = Carbon::now();

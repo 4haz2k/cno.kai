@@ -2,10 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property array|Application|mixed|integer|null id
+ * @property array|Application|mixed|string|null country
+ * @property array|Application|mixed|string|null region
+ * @property array|Application|mixed|string|null locality
+ * @property array|Application|mixed|string|null district
+ * @property array|Application|mixed|string|null street
+ * @property array|Application|mixed|string|null house
+ * @property array|Application|mixed|string|null frame
+ * @property array|Application|mixed|string|null apartment
+ */
 class Address extends Model
 {
     use HasFactory;

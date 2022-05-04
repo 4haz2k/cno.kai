@@ -3,12 +3,16 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * @property mixed the_same_address
  * @property mixed role
+ * @property mixed place_of_residence
+ * @property mixed user_id
+ * @property mixed place_of_residence_id
  */
-class RegistrationRequest extends FormRequest
+class ProfileEditRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,16 +35,17 @@ class RegistrationRequest extends FormRequest
 
         return [
             // user data
-            "email" => "required|email|unique:users,login",
+            "user_id" => "required|exists:users,id",
+            "address_id" => "required|exists:addresses,id",
+            "email" => [
+                "required",
+                "email",
+                Rule::unique('users', 'login')->ignore($this->user_id)
+            ],
             "telephone" => [
                 "required",
                 "size:11",
                 "regex:/^([+]?\d{1,2}[-\s]?|)\d{3}[-\s]?\d{3}[-\s]?\d{4}$/"
-            ],
-            "password" => [
-                "required",
-                "min:6",
-                "regex:/(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}/"
             ],
             // passport
             "passport.name" => [
@@ -71,8 +76,18 @@ class RegistrationRequest extends FormRequest
                 "required",
                 "regex:/^\d{3}-\d{3}$/"
             ],
-            "passport.INN" => "required|size:12|unique:passports,ITN|regex:/^\d{12}$/",
-            "passport.SNILS" => "required|size:11|unique:passports,INILA|regex:/^\d{11}$/",
+            "passport.INN" => [
+                "required",
+                "size:12",
+                Rule::unique('passports', 'ITN')->ignore($this->user_id),
+                "regex:/^\d{12}$/"
+            ],
+            "passport.SNILS" => [
+                "required",
+                "size:11",
+                Rule::unique('passports', 'INILA')->ignore($this->user_id),
+                "regex:/^\d{11}$/"
+            ],
             "passport.place_of_residence.country" => [
                 "required",
                 "regex:/(^([А-Я]?[а-я]+\s?-?){0,5}\S$)|(^([A-Z]?[a-z]+\s?-?){0,5}\S$)/u"
@@ -103,6 +118,7 @@ class RegistrationRequest extends FormRequest
             ],
             "the_same_address" => "required|boolean",
             // address
+            "place_of_residence_id" => "exists:addresses,id|required_if:the_same_address,0,false",
             "place_of_residence.country" => [
                 "required_if:the_same_address,0,false",
                 "regex:/(^([А-Я]?[а-я]+\s?-?){0,5}\S$)|(^([A-Z]?[a-z]+\s?-?){0,5}\S$)/u"
@@ -135,7 +151,7 @@ class RegistrationRequest extends FormRequest
             "position" => "required_if:role,0,PREPOD|in:$positions",
             "faculty" => [
                 "required_if:role,0,PREPOD",
-                "regex:/^[\dа-яёА-ЯЁA-Za-z]([\dа-яёА-ЯЁA-Za-z.]|(\s[\dа-яёА-ЯЁA-Za-z]))+$/u"
+                "regex:/^([а-яА-Я]+ ?)+$/"
             ],
             "personal_number" => [
                 "required_if:role,0,PREPOD",
