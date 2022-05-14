@@ -37,6 +37,9 @@ class ProfileEditRequest extends FormRequest
             // user data
             "user_id" => "required|exists:users,id",
             "address_id" => "required|exists:addresses,id",
+            "password" => [
+                "regex:/^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}$/"
+            ],
             "email" => [
                 "required",
                 "email",
@@ -45,7 +48,7 @@ class ProfileEditRequest extends FormRequest
             "telephone" => [
                 "required",
                 "size:11",
-                "regex:/^([+]?\d{1,2}[-\s]?|)\d{3}[-\s]?\d{3}[-\s]?\d{4}$/"
+                "regex:^[+]?\d{1,2}[-\s]?\(?\d{3}\)?[-\s]?\d{3}[-\s]?((\d{4})|(\d{2}[-\s]?\d{2}))$"
             ],
             // passport
             "passport.name" => [
@@ -58,7 +61,6 @@ class ProfileEditRequest extends FormRequest
             ],
             "passport.patronymic" => ["regex:/(^[А-Я]?[а-я]+$)|(^[A-Z]?[a-z]+$)/u"],
             "passport.date_of_birth" => "required|date_format:d.m.Y",
-            "passport.sex" => "required|in:M,W",
             "passport.serial" => [
                 "required",
                 "regex:/^\d{4}$/"

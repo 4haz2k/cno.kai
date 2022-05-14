@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SpecialityRequest;
 use App\Models\Speciality;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class SpecialitiesController extends Controller
 {

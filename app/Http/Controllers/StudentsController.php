@@ -68,7 +68,8 @@ class StudentsController extends Controller
 
         $student = Student::where("id", \request("student_id"))
             ->with([
-                "user" => function($q){ $q->select(["id", "login", "phone"]); },
+                "user" => function($q){ $q->select(["id", "login", "phone", "actual_place_of_residence_id"]); },
+                "user.actualPlaceOfResidence",
                 "user.passport" => function($q){ $q->select(["id", "place_of_residence_id", "series", "number", "date_of_issue", "issued", "division_code", "ITN", "INILA", "secondname", "firstname", "thirdname", "birthday"]); },
                 "user.passport.placeOfResidence",
                 "group" => function ($q) { $q->select(["id", "specialty_id",  "group_code"]); },
@@ -80,6 +81,13 @@ class StudentsController extends Controller
             return response()->json(["error" => "student not found"]);
         }
 
-        return response()->json($student);
+        if($student->user->actual_place_of_residence_id == $student->user->passport->place_of_residence_id){
+            $flag = ["is_actual" => true];
+        }
+        else{
+            $flag = ["is_actual" => false];
+        }
+
+        return response()->json($student->toArray() + $flag);
     }
 }

@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property mixed order_id
+ * @property mixed status
+ */
 class ChangeStatusOfOrderRequest extends FormRequest
 {
     /**
@@ -11,9 +15,9 @@ class ChangeStatusOfOrderRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +25,12 @@ class ChangeStatusOfOrderRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
+        $statuses = implode(",", config("statics.statuses"));
         return [
-            //
+            "order_id" => "required|exists:orders,id",
+            "status" => "required|in:$statuses"
         ];
     }
 }

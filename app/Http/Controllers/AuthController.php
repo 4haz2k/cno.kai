@@ -236,14 +236,15 @@ class AuthController extends Controller
         $passport->firstname = \request("passport.name");
         $passport->thirdname = \request("passport.patronymic");
         $passport->birthday = date('Y-m-d', strtotime(\request("passport.date_of_birth")));
-        $passport->sex = \request("passport.sex");
         $passport->save();
 
-        // регистрируем нового пользователя
+        // Обновляем пользователя
         $user = User::where("id", $request->user_id)->first();
         $user->id = $passport->id;
         $user->login = \request("email");
-        $user->password = Hash::make(\request("password"));
+        if(\request("password") && !\request("password") == ""){
+            $user->password = Hash::make(\request("password"));
+        }
         $user->phone = \request("telephone");
         $user->role = \request("role");
 
@@ -277,7 +278,7 @@ class AuthController extends Controller
             $student->save();
         }
 
-        // регистрация
+        // измененение
         return response()->json([
             'message' => 'Successfully profile edit!',
             'data' => [

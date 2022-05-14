@@ -24,7 +24,11 @@ class GroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "group" => "required|unique:groups,group_code|regex: /^\d+$/g",
+            "group" => [
+                "required",
+                "unique:groups,group_code",
+                "regex:/^\d+$/u"
+            ],
             "speciality" => "required|exists:specialty,id"
         ];
     }

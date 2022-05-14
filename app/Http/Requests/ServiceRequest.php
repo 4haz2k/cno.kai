@@ -24,7 +24,11 @@ class ServiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|unique:services,title|regex:/^([а-яА-Я]+ ?)+$/g"
+            "title" => [
+                "required",
+                "unique:services,title",
+                "regex:/^([а-яА-Я]+ ?)+$/u"
+            ]
         ];
     }
 }

@@ -4,16 +4,21 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property mixed id
+ * @property mixed value
+ */
 class StoreDescriptionOfProfessorRequest extends FormRequest
 {
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +26,11 @@ class StoreDescriptionOfProfessorRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            //
+            "id" => "required|exists:professors,id",
+            "value" => ["required", "regex:/(^[A-Za-zА-ЯЁа-яё\d!?.,:;\"'%]+\s?-?){0,250}\S$/u"]
         ];
     }
 }

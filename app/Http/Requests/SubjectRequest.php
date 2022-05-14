@@ -24,8 +24,15 @@ class SubjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|unique:subjects,title|regex:/^([а-яА-Яa-zA-Z]+ ?)+$/g",
-            "description" => "max:200|regex:/^([а-яА-Яa-zA-Z-_.!;0-9]+ ?)+$/g"
+            "title" => [
+                "required",
+                "unique:subjects,title",
+                "regex:/^[а-яёА-ЯЁA-Za-z]([а-яёА-ЯЁA-Za-z.]|(\s[а-яёА-ЯЁA-Za-z]))+$/u"
+            ],
+            "description" => [
+                "max:200",
+                "regex:/^[а-яёА-ЯЁA-Za-z]([\dа-яёА-ЯЁA-Za-z.-]|(\s[\dа-яёА-ЯЁA-Za-z]))+$/u"
+            ]
         ];
     }
 }

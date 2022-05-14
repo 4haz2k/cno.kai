@@ -49,6 +49,7 @@ Route::group([
     Route::post('/getSingle', [OrdersController::class, "getSingleOrder"]);
     Route::post('/professor/all', [OrdersController::class, "getByProfessor"]);
     Route::post('/create', [OrdersController::class, "createOrder"]);
+    Route::post('/changeStatus', [OrdersController::class, "changeStatus"]);
 });
 
 Route::group([
@@ -63,6 +64,7 @@ Route::group([
     Route::post('/page/all', [ProfessorsController::class, "pageProfessorsList"]);
     Route::post('/positions/all', [ProfessorsController::class, "positionsList"]);
     Route::post('/timetable', [ProfessorsController::class, "getProfessorTimeTable"]);
+    Route::post('/edit/description', [ProfessorsController::class, "editDescription"]);
 });
 
 Route::group([

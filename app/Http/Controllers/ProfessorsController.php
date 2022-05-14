@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreDescriptionOfProfessorRequest;
 use App\Models\Professor;
 use App\Models\Subject;
 use App\Models\SubjectsOfProfessor;
@@ -143,7 +144,8 @@ class ProfessorsController extends Controller
 
         $professor = Professor::where("id", \request("professor_id"))
         ->with([
-            "user" => function($q){ $q->select(["id", "login", "phone"]); },
+            "user" => function($q){ $q->select(["id", "login", "phone", "actual_place_of_residence_id"]); },
+            "user.actualPlaceOfResidence",
             "user.passport" => function($q){ $q->select(["id", "place_of_residence_id", "series", "number", "date_of_issue", "issued", "division_code", "ITN", "INILA", "secondname", "firstname", "thirdname", "birthday"]); },
             "user.passport.placeOfResidence",
         ])->first();
@@ -152,7 +154,14 @@ class ProfessorsController extends Controller
             return response()->json(["error" => "professor not found"], 404);
         }
 
-        return response()->json($professor);
+        if($professor->user->actual_place_of_residence_id == $professor->user->passport->place_of_residence_id){
+            $flag = ["is_actual" => true];
+        }
+        else{
+            $flag = ["is_actual" => false];
+        }
+
+        return response()->json($professor->toArray() + $flag);
     }
 
     /**
@@ -224,5 +233,22 @@ class ProfessorsController extends Controller
         }
 
         return response()->json($timetable);
+    }
+
+    /**
+     *
+     * Изменение описания преподавателя
+     *
+     * @param StoreDescriptionOfProfessorRequest $request
+     * @return JsonResponse
+     */
+    public function editDescription(StoreDescriptionOfProfessorRequest $request): JsonResponse
+    {
+        $professor = Professor::where("id", $request->id)->first();
+        $professor->description = $request->value;
+
+        $professor->save();
+
+        return response()->json(["message" => "data saved success"]);
     }
 }

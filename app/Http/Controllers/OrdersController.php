@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangeStatusOfOrderRequest;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
-use App\Models\Professor;
 use App\Models\TimeTable;
 use App\Services\DocumentService;
 use App\Services\SecurityService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
@@ -229,5 +228,21 @@ class OrdersController extends Controller
         else{
             return response()->json(["order_id" => $order->id,"message" => "order created, but failed to create file"]);
         }
+    }
+
+    /**
+     *
+     * Изменение статуса заказа
+     *
+     * @param ChangeStatusOfOrderRequest $request
+     * @return JsonResponse
+     */
+    public function changeStatus(ChangeStatusOfOrderRequest $request): JsonResponse
+    {
+        $order = Order::where("id", $request->order_id)->first();
+        $order->status = $request->status;
+        $order->save();
+
+        return response()->json(["message" => "data saved success"]);
     }
 }
