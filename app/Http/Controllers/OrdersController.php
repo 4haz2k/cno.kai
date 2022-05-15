@@ -9,6 +9,7 @@ use App\Models\TimeTable;
 use App\Services\DocumentService;
 use App\Services\SecurityService;
 use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
 use Illuminate\Http\JsonResponse;
 
 class OrdersController extends Controller
@@ -205,7 +206,7 @@ class OrdersController extends Controller
         $order->status = "Проверка";
         $order->price = bcdiv($price * (double)$request->number_of_hours, 1, 2);
 
-        $currentTime = Carbon::now();
+        $currentTime = Carbon::now("Europe/Moscow");
         $order->create_date = $currentTime->toDateTimeString();
 
         $order->number_of_lessons = $request->number_of_hours;

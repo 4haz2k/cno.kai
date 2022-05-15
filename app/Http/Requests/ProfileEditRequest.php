@@ -47,19 +47,18 @@ class ProfileEditRequest extends FormRequest
             ],
             "telephone" => [
                 "required",
-                "size:11",
-                "regex:^[+]?\d{1,2}[-\s]?\(?\d{3}\)?[-\s]?\d{3}[-\s]?((\d{4})|(\d{2}[-\s]?\d{2}))$"
+                "regex:/^[+]?\d{1,2}[-\s]?\(?\d{3}\)?[-\s]?\d{3}[-\s]?((\d{4})|(\d{2}[-\s]?\d{2}))$/"
             ],
             // passport
             "passport.name" => [
                 "required",
-                "regex:/(^[А-Я]?[а-я]+$)|(^[A-Z]?[a-z]+$)/u"
+                "regex:/(^[А-ЯЁ]?[а-яё]+$)|(^[A-Z]?[a-z]+$)/u"
             ],
             "passport.surname" => [
                 "required",
-                "regex:/(^[А-Я]?[а-я]+$)|(^[A-Z]?[a-z]+$)/u"
+                "regex:/(^[А-ЯЁ]?[а-яё]+$)|(^[A-Z]?[a-z]+$)/u"
             ],
-            "passport.patronymic" => ["regex:/(^[А-Я]?[а-я]+$)|(^[A-Z]?[a-z]+$)/u"],
+            "passport.patronymic" => ["regex:/(^[А-ЯЁ]?[а-яё]+$)|(^[A-Z]?[a-z]+$)/u"],
             "passport.date_of_birth" => "required|date_format:d.m.Y",
             "passport.serial" => [
                 "required",

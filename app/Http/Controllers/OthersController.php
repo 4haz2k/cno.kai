@@ -6,30 +6,18 @@ use App\Http\Requests\ServiceRequest;
 use App\Models\Order;
 use App\Models\Service;
 use App\Models\Speciality;
-use App\Models\Subject;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class OthersController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
-//    }
-
     /**
      * Возвращает статистику по предметам и их заказам за месяц + топ 10 преподавателей и количество их заказов
      */
     public function getStatistic(): JsonResponse
     {
         // получение данных
-        $orders = $this->getOrders(Carbon::now()->toDateString(), Carbon::now()->subMonth()->toDateString());
+        $orders = $this->getOrders(Carbon::now("Europe/Moscow")->toDateTimeString(), Carbon::now("Europe/Moscow")->subMonth()->toDateTimeString());
 
         // извлечение данных
         $subjects = $orders->pluck("timeTable.subjectOfProfessor.subject");
@@ -58,6 +46,8 @@ class OthersController extends Controller
      */
     private function sortSubjects($subjects, $orders): array
     {
+        $subjects = $this->arrayUniqueKey($subjects, "id"); // удаление повторяющихся значений предметов
+
         $subjects_list = [];
 
         foreach ($subjects as $subject){
@@ -87,6 +77,29 @@ class OthersController extends Controller
         }
 
         return $subjects_list;
+    }
+
+    /**
+     *
+     * Удаление дубликатов массива по одному ключу
+     *
+     * @param $array
+     * @param $key
+     * @return array
+     */
+    private function arrayUniqueKey($array, $key): array
+    {
+        $tmp = $key_array = array();
+        $i = 0;
+
+        foreach($array as $val) {
+            if (!in_array($val[$key], $key_array)) {
+                $key_array[$i] = $val[$key];
+                $tmp[$i] = $val;
+            }
+            $i++;
+        }
+        return $tmp;
     }
 
     /**
@@ -140,8 +153,8 @@ class OthersController extends Controller
      * @return mixed
      */
     private function getOrders($current_time, $previous_time){
-        return Order::where("create_date", ">=", "2013-01-13 23:20:52")
-            ->where("create_date", "<=", "2018-08-30 17:45:07")
+        return Order::where("create_date", ">=", $previous_time)
+            ->where("create_date", "<=", $current_time)
             ->with("timeTable.subjectOfProfessor.subject")
             ->with("timeTable.subjectOfProfessor.professor.user.passport")
             ->get()
