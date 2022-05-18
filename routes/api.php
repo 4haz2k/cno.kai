@@ -111,6 +111,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/statistic/orders', [OthersController::class, "getStatistic"]);
+    Route::post('/statistic/statements', [OthersController::class, "getStatement"]);
     Route::post('/services', [OthersController::class, "getServices"]);
     Route::post('/services/add', [OthersController::class, "addService"]);
     Route::post('/faculties', [OthersController::class, "getFaculties"]);

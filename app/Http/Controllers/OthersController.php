@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ServiceRequest;
+use App\Http\Requests\StatementRequest;
 use App\Models\Order;
 use App\Models\Service;
 use App\Models\Speciality;
+use App\Services\StatementService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
@@ -198,5 +200,16 @@ class OthersController extends Controller
         $faculties = Speciality::select("faculty")->distinct()->pluck("faculty");
 
         return response()->json($faculties);
+    }
+
+    /**
+     * Получение файлов ведомости
+     * @param StatementRequest $request
+     * @return JsonResponse
+     */
+    public function getStatement(StatementRequest $request): JsonResponse
+    {
+        $data = new StatementService(request("professor_id"));
+        return response()->json();
     }
 }
