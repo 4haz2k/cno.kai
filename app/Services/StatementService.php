@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -84,7 +85,7 @@ class StatementService
         $orders = $this->getOrdersByRange();
 
         // услуги
-        $services = ["service" => $services = $this->arrayUniqueKey($orders->pluck("service")->toArray(), "id"), "count" => count($services)];
+        $services = ["service" => $services = Service::all()->toArray(), "count" => count($services)];
 
         $orders_list = $orders->toArray();
         $list = [];
@@ -251,8 +252,8 @@ class StatementService
 
         $style = [
             'lineHeight' => 1.0,
-            'spaceBefore' => Converter::cmToTwip(0.3),
-            'spaceAfter' => Converter::cmToTwip(0.5),
+            'spaceBefore' => Converter::pointToTwip(6),
+            'spaceAfter' => Converter::pointToTwip(18),
             'align' => 'center',
             'valign' => 'end'
         ];
@@ -273,12 +274,20 @@ class StatementService
             'valign' => 'center'
         ];
 
+        $style4 = [
+            'lineHeight' => 1.0,
+            'spaceBefore' => Converter::pointToTwip(0),
+            'spaceAfter' => Converter::pointToTwip(18),
+            'align' => 'center',
+            'valign' => 'end'
+        ];
+
         // создаем шапку таблички
-        $table->addRow();
-        $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR, 'vMerge' => 'restart', 'valign' => 'center'])->addText("Число месяца", $styleCell12, $style);
+        $table->addRow($converter::cmToTwip(0.6));
+        $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR, 'vMerge' => 'restart', 'valign' => 'center'])->addText("Число месяца", $styleCell12, $style4);
         $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR, 'vMerge' => 'restart', 'valign' => 'center'])->addText("№ группы", $styleCell12, $style);
         $table->addCell($converter::cmToTwip(14.49), $cellColSpan)->addText("Фактически выполнено часов по видам занятий", $styleCell9, $style2);
-        $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR, 'vMerge' => 'restart', 'valign' => 'center'])->addText("Примечание", $styleCell12, $style);
+        $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR, 'vMerge' => 'restart', 'valign' => 'center'])->addText("Примечание", $styleCell12, $style4);
 
         // создание и вывод услуг
         $table->addRow($converter::cmToTwip(1.8));
@@ -289,7 +298,7 @@ class StatementService
 
         foreach ($services["service"] as $service){
             $pos++;
-            $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR])->addText($service["title"], $styleCell10, $style);
+            $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR])->addText($this->makeShortTitle($service["title"]), $styleCell10, $style);
             array_push($flags, ["service_id" => $service["id"], "pos" => $pos]);
         }
 
@@ -341,6 +350,17 @@ class StatementService
         }
 
         return $table;
+    }
+
+    /**
+     *
+     */
+    private function makeShortTitle($word){
+        $word = explode(" ", $word);
+
+        $word[0] = mb_strimwidth($word[0], 0, 8, ".");
+
+        return implode(" ", $word);
     }
 
     /**
