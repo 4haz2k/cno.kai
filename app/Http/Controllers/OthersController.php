@@ -10,6 +10,7 @@ use App\Models\Speciality;
 use App\Services\StatementService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class OthersController extends Controller
 {
@@ -205,11 +206,11 @@ class OthersController extends Controller
     /**
      * Получение файлов ведомости
      * @param StatementRequest $request
-     * @return JsonResponse
+     * @return BinaryFileResponse
      */
-    public function getStatement(StatementRequest $request): JsonResponse
+    public function getStatement(StatementRequest $request): BinaryFileResponse
     {
         $data = new StatementService(request("professor_id"));
-        return response()->json($data->createStatements());
+        return response()->download($data->createStatements())->deleteFileAfterSend(true);
     }
 }

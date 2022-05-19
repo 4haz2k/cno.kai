@@ -5,6 +5,7 @@ use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
@@ -14,6 +15,7 @@ use PhpOffice\PhpWord\Shared\Converter;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\Style\Cell;
 use PhpOffice\PhpWord\TemplateProcessor;
+use ZipArchive;
 
 class StatementService
 {
@@ -123,29 +125,93 @@ class StatementService
      * Создание ведомости одного преподавателя
      */
     public function createStatements(){
-//        $document = $this->openTemplate();
-//
-//        if(!$document["status"]){
-//            return $document["info"];
-//        }
-
         $list = $this->dataSortAndFilter();
 
         $services = $list["services"];
         $professors = $list["professors"];
 
-        //$docs_path = [];
+        $docs_path = [];
 
         $c = 1;
         foreach ($professors as $professor){
             $document = $this->openTemplate()["doc"];
             $table = $this->createSingleStatement($professor, $services);
+
+            // Заменяю placeholder'ы
             $document->setComplexBlock("table", $table);
+            $document = $this->replaceTags($document, $professor);
+
+            // сохраняю
             $document->saveAs(public_path("documents/statements/statement_num_{$c}.docx"));
+            array_push($docs_path, ["link" => public_path("documents/statements/statement_num_{$c}.docx"), "fio" => $professor["fio"]]);
             $c++;
         }
 
-        return true;
+        $zip = new ZipArchive;
+        if ($zip->open(public_path("documents/statements/statement.zip"), ZipArchive::CREATE) === TRUE)
+        {
+            foreach ($docs_path as $path){
+                $zip->addFile($path["link"], "{$path["fio"]}.docx");
+            }
+            $zip->close();
+
+            File::delete(array_column($docs_path, "link"));
+        }
+
+        return public_path("documents/statements/statement.zip");
+    }
+
+    /**
+     * @param $document TemplateProcessor
+     * @param $professor
+     * @return mixed
+     */
+    private function replaceTags(TemplateProcessor $document, $professor): TemplateProcessor
+    {
+        $word = new TextRun();
+        $word->addText($professor["department"], [
+            "size" => 12,
+            "name" => "Times New Roman",
+            "underline" => 'single',
+        ]);
+        $document->setComplexValue("faculty", $word);
+
+        $word = new TextRun();
+        $word->addText($professor["position"], [
+            "size" => 12,
+            "name" => "Times New Roman",
+            "underline" => 'single',
+        ]);
+        $document->setComplexValue("position", $word);
+
+        $word = new TextRun();
+        $word->addText($professor["personal_number"], [
+            "size" => 12,
+            "name" => "Times New Roman",
+            "underline" => 'single',
+        ]);
+        $document->setComplexValue("personal_number", $word);
+
+        $word = new TextRun();
+        $word->addText($professor["fio"], [
+            "size" => 12,
+            "name" => "Times New Roman",
+            "underline" => 'single',
+        ]);
+        $document->setComplexValue("fio", $word);
+
+        setlocale(LC_TIME, 'ru_RU.UTF-8');
+        Carbon::setLocale("ru");
+        $date = Carbon::now("Europe/Moscow");
+
+        $word = new TextRun();
+        $word->addText($date->subMonth()->isoFormat('MMMM Y'), [
+            "size" => 12,
+            "name" => "Times New Roman"
+        ]);
+        $document->setComplexValue("date", $word);
+
+        return $document;
     }
 
     /**
@@ -185,8 +251,8 @@ class StatementService
 
         $style = [
             'lineHeight' => 1.0,
-            'spaceBefore' => Converter::cmToTwip(0.2),
-            'spaceAfter' => Converter::cmToTwip(0.2),
+            'spaceBefore' => Converter::cmToTwip(0.3),
+            'spaceAfter' => Converter::cmToTwip(0.5),
             'align' => 'center',
             'valign' => 'end'
         ];
@@ -322,7 +388,6 @@ class StatementService
             }
 
             $array = array_values($filtered);
-            $test = $array;
 
             // соединяем заказы в один день месяца
             for($i = 0; $i < count($array); $i++){
