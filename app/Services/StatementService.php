@@ -122,27 +122,39 @@ class StatementService
     /**
      * Создание ведомости одного преподавателя
      */
-    private function createStatements(){
-        $document = $this->openTemplate();
-
-        if(!$document["status"]){
-            return $document["info"];
-        }
-
-        $document = $document["doc"];
+    public function createStatements(){
+//        $document = $this->openTemplate();
+//
+//        if(!$document["status"]){
+//            return $document["info"];
+//        }
 
         $list = $this->dataSortAndFilter();
 
         $services = $list["services"];
         $professors = $list["professors"];
 
-        $docs_path = [];
+        //$docs_path = [];
 
+        $c = 1;
         foreach ($professors as $professor){
-            array_push($docs_path, $this->createSingleStatement($professor, $services));
+            $document = $this->openTemplate()["doc"];
+            $table = $this->createSingleStatement($professor, $services);
+            $document->setComplexBlock("table", $table);
+            $document->saveAs(public_path("documents/statements/statement_num_{$c}.docx"));
+            $c++;
         }
+
+        return true;
     }
 
+    /**
+     *
+     * Создание одного экземпляра документа
+     *
+     * @param $professor
+     * @param $services
+     */
     private function createSingleStatement($professor, $services){
         $dataToInsert = $this->sortTimeService($professor);
         $converter = new Converter();
@@ -151,6 +163,7 @@ class StatementService
         $styleTable = array('borderSize' => 6, 'borderColor' => '999999', "alignment" => "center");
         $cellRowContinue = array('vMerge' => 'continue');
         $cellColSpan = array('gridSpan' => $services["count"] + 1, 'valign' => 'center');
+        $cellColSpan2 = array('gridSpan' => 2, 'valign' => 'center');
 
         $table = new Table($styleTable);
 
@@ -215,19 +228,36 @@ class StatementService
         $table->addCell(null, $cellRowContinue);
 
         // вывод данных
-        $month = 1;
-        $flag_found = true;
-        for($month; $month <= 31; $month++){
+        for($month = 1; $month <= 31; $month++){
             $table->addRow();
-            $table->addCell($converter::cmToTwip(1.32))->addText("$month", $styleCell12, $style3);
+            $table->addCell($converter::cmToTwip(1.32))->addText("$month", $styleCell10, $style3);
 
-            foreach ($dataToInsert as $datum){
-                if($datum["date"] == $month){
-                    //
-                    $flag_found = false;
+            foreach ($flags as $flag){
+                $flag_found = true;
+
+                foreach ($dataToInsert as $datum){
+                    if($flag["service_id"] == $datum["service"]["id"] and $month == $datum["date"]){
+                        $table->addCell($converter::cmToTwip(1.32))->addText("{$datum["count"]}", $styleCell10, $style3);
+                        $flag_found = false;
+                        break;
+                    }
+                }
+
+                if($flag_found){
+                    $table->addCell($converter::cmToTwip(1.32))->addText("", $styleCell10, $style3);
                 }
             }
+            $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR])->addText("Всего", $styleCell10, $style);
         }
+
+        $table->addRow();
+        $table->addCell($converter::cmToTwip(2.64), $cellColSpan2)->addText("Итого", $styleCell10, $style3);
+
+        for ($i = 1; $i <= $services["count"] + 2; $i++){
+            $table->addCell($converter::cmToTwip(1.32))->addText("", $styleCell10, $style3);
+        }
+
+        return $table;
     }
 
     /**
@@ -248,7 +278,12 @@ class StatementService
                     date("d",strtotime($array[$i]["date"])) == date("d",strtotime($array[$j]["date"])) and
                     $array[$i]["group"]["id"] == $array[$j]["group"]["id"])
                 {
-                    $array[$i]["count"] += 1;
+                   if(array_key_exists("count", $array[$i]) === false){
+                       $array[$i] + ["count" => 1];
+                   }
+                   else{
+                       $array[$i]["count"] += 1;
+                   }
                 }
             }
         }

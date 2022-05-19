@@ -210,6 +210,6 @@ class OthersController extends Controller
     public function getStatement(StatementRequest $request): JsonResponse
     {
         $data = new StatementService(request("professor_id"));
-        return response()->json();
+        return response()->json($data->createStatements());
     }
 }
