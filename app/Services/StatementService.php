@@ -92,9 +92,9 @@ class StatementService
                 if(array_search($order->timeTable->subjectOfProfessor->professor->id, array_column($list, "professor_id")) !== false){ // если найден ключ уже в готовом списке, то добавляем элементы в существующий элемент
                     // добавляем данные
                     array_push($list[array_search($order->timeTable->subjectOfProfessor->professor->id, array_column($list, "professor_id"))]["data"], [
-                        "service" => $order->service,
+                        "service" => $order->service->toArray(),
                         "date" => $order->create_date,
-                        "group" => $order->student->group
+                        "group" => $order->student->group->toArray()
                     ]);
 
                     unset($orders_list[$key]);
@@ -107,9 +107,9 @@ class StatementService
                         "personal_number" => $order->timeTable->subjectOfProfessor->professor->personal_number,
                         "position" => $order->timeTable->subjectOfProfessor->professor->position,
                         "data" => [[
-                            "service" => $order->service,
+                            "service" => $order->service->toArray(),
                             "date" => $order->create_date,
-                            "group" => $order->student->group
+                            "group" => $order->student->group->toArray()
                         ]]
                     ]);
                 }
@@ -154,9 +154,12 @@ class StatementService
      *
      * @param $professor
      * @param $services
+     * @return Table
      */
-    private function createSingleStatement($professor, $services){
+    private function createSingleStatement($professor, $services): Table
+    {
         $dataToInsert = $this->sortTimeService($professor);
+
         $converter = new Converter();
         $flags = [];
 
@@ -232,22 +235,36 @@ class StatementService
             $table->addRow();
             $table->addCell($converter::cmToTwip(1.32))->addText("$month", $styleCell10, $style3);
 
-            foreach ($flags as $flag){
-                $flag_found = true;
+            if(array_search($month, array_column($dataToInsert, "date")) !== false){
+                $key = array_search($month, array_column($dataToInsert, "date"));
 
-                foreach ($dataToInsert as $datum){
-                    if($flag["service_id"] == $datum["service"]["id"] and $month == $datum["date"]){
-                        $table->addCell($converter::cmToTwip(1.32))->addText("{$datum["count"]}", $styleCell10, $style3);
-                        $flag_found = false;
-                        break;
+                $table->addCell($converter::cmToTwip(1.32))->addText("{$dataToInsert[$key]["groups"]}", $styleCell10, $style3);
+
+                foreach ($flags as $flag){
+                    $flag_found = true;
+
+                    foreach ($dataToInsert[$key]["data"] as $datum){
+                        if($flag["service_id"] == $datum["service"]["id"]){
+                            $table->addCell($converter::cmToTwip(1.32))->addText("{$datum["count"]}", $styleCell10, $style3);
+                            $flag_found = false;
+                            break;
+                        }
+                    }
+
+                    if($flag_found){
+                        $table->addCell($converter::cmToTwip(1.32))->addText("", $styleCell10, $style3);
                     }
                 }
 
-                if($flag_found){
-                    $table->addCell($converter::cmToTwip(1.32))->addText("", $styleCell10, $style3);
+                $table->addCell($converter::cmToTwip(1.32))->addText("{$dataToInsert[$key]["total"]}", $styleCell10, $style3);
+            }
+            else{
+                for ($i = 0; $i < $services["count"] + 2; $i++){
+                    $table->addCell($converter::cmToTwip(1.32))->addText("", $styleCell12, $style3);
                 }
             }
-            $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR])->addText("Всего", $styleCell10, $style);
+
+            $table->addCell($converter::cmToTwip(1.32), ['textDirection'=> Cell::TEXT_DIR_BTLR])->addText("", $styleCell10, $style);
         }
 
         $table->addRow();
@@ -271,49 +288,94 @@ class StatementService
     {
         $array = $list["data"];
 
-        // подсчитываем дубликаты по услуге, дню месяца и группе
-        for($i = 0; $i <= count($array); $i++){
-            for($j = 0; $j <= count($array) - 1; $j++){
-                if($array[$i]["service"]["id"] == $array[$j]["service"]["id"] and
-                    date("d",strtotime($array[$i]["date"])) == date("d",strtotime($array[$j]["date"])) and
-                    $array[$i]["group"]["id"] == $array[$j]["group"]["id"])
-                {
-                   if(array_key_exists("count", $array[$i]) === false){
-                       $array[$i] + ["count" => 1];
-                   }
-                   else{
-                       $array[$i]["count"] += 1;
-                   }
+        if (count($array) == 1){
+            $array[0]["date"] = (int)date("d",strtotime($array[0]["date"]));
+            $array[0] += ["count" => 1];
+        }
+        else{
+            // подсчитываем дубликаты по услуге, дню месяца и группе
+            for($i = 0; $i < count($array); $i++){
+                for($j = 0; $j < count($array); $j++){
+                    if($array[$i]["service"]["id"] == $array[$j]["service"]["id"] and
+                        date("d",strtotime($array[$i]["date"])) == date("d",strtotime($array[$j]["date"])) and
+                        $array[$i]["group"]["id"] == $array[$j]["group"]["id"])
+                    {
+                        if(array_key_exists("count", $array[$i]) === false){
+                            $array[$i] += ["count" => 1];
+                        }
+                        else{
+                            $array[$i]["count"] += 1;
+                        }
+                    }
+                }
+            }
+
+            // конвертируем дату в день месяца
+            foreach ($array as &$value){
+                $value["date"] =  (int)date("d",strtotime($value["date"]));
+            }
+
+            // убираем дубликаты
+            $filtered = [];
+            foreach ($array as $item) {
+                $filtered[$item['service']["id"].$item["date"].$item['group']["id"]] = $item;
+            }
+
+            $array = array_values($filtered);
+            $test = $array;
+
+            // соединяем заказы в один день месяца
+            for($i = 0; $i < count($array); $i++){
+                for($j = 1; $j < count($array); $j++){
+                    if($array[$i]["service"]["id"] == $array[$j]["service"]["id"] and $array[$i]["date"] == $array[$j]["date"] and $array[$i]["group"]["id"] != $array[$j]["group"]["id"])
+                    {
+                        $array[$i]["count"] += (int)$array[$j]["count"];
+                        $array[$i]["group"]["group_code"] .= ", ".$array[$j]["group"]["group_code"];
+                        unset($array[$j]);
+                    }
                 }
             }
         }
 
-        // конвертируем дату в день месяца
-        foreach ($array as &$value){
-            $value["date"] =  (int)date("d",strtotime($value["date"]));
-        }
+        $new_array = [];
 
-        // убираем дубликаты
-        $filtered = [];
-        foreach ($array as $item) {
-            $filtered[$item['service']["id"].$item["date"].$item['group']["id"]] = $item;
-        }
-
-        $array = array_values($filtered);
-
-        // соединяем заказы в один день месяца
-        for($i = 0; $i <= count($array); $i++){
-            for($j = 1; $j <= count($array); $j++){
-                if($array[$i]["service"]["id"] == $array[$j]["service"]["id"] and $array[$i]["date"] == $array[$j]["date"] and $array[$i]["group"]["id"] != $array[$j]["group"]["id"])
-                {
-                    $array[$i]["count"] += (int)$array[$j]["count"];
-                    $array[$i]["group"]["group_code"] .= ", ".$array[$j]["group"]["group_code"];
-                    unset($array[$j]);
-                }
+        // объединяем все данные в одну
+        foreach ($array as $item){
+            if(array_search($item["date"], array_column($new_array, "date")) !== false){
+                $key = array_search($item["date"], array_column($new_array, "date"));
+                $new_array[$key]["groups"] .= ", ".$item["group"]["group_code"];
+                array_push($new_array[$key]["data"], ["service" => $item["service"], "count" => $item["count"]]);
+            }
+            else{
+                array_push($new_array, [
+                    "date" => $item["date"],
+                    "groups" => $item["group"]["group_code"],
+                    "data" => [
+                        [
+                            "service" => $item["service"],
+                            "count" => $item["count"]
+                        ]
+                    ]
+                ]);
             }
         }
 
-        return $array;
+        foreach ($new_array as &$item){
+            $temp_groups = explode(", ", $item["groups"]);
+
+            $temp_groups = array_unique($temp_groups);
+
+            $item["groups"] = implode(", ", $temp_groups);
+
+            $total = 0;
+            foreach ($item["data"] as $service){
+                $total += $service["count"];
+            }
+
+            $item += ["total" => $total];
+        }
+
+        return $new_array;
     }
 
     /**
