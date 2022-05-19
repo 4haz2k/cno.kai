@@ -38,6 +38,24 @@ class StatementService
 
     /**
      *
+     * Генерация документов
+     *
+     * @return array
+     */
+    public function getStatementLink(): array
+    {
+        $orders = $this->getOrdersByRange();
+
+        if($orders->isEmpty()){
+            return ["status" => false, "message" => "Orders by last month not found"];
+        }
+        else{
+            return ["status" => true, "link" => $this->createStatements()];
+        }
+    }
+
+    /**
+     *
      * Получение списка заказов
      *
      * @return Builder[]|Collection
@@ -46,7 +64,6 @@ class StatementService
 
         if(!$this->professor_id){
             return Order::with([
-                "service" => function($q){ $q->select(["id", "title"]); },
                 "timeTable" => function($q){ $q->select(["id", "subject_of_professor_id"]); },
                 "timeTable.subjectOfProfessor.professor" => function($q){ $q->select(["id", "position", "personal_number", "department"]); },
                 "timeTable.subjectOfProfessor.professor.user.passport" => function($q){ $q->select(["id", "secondname", "firstname", "thirdname"]); },
@@ -60,7 +77,6 @@ class StatementService
         }
         else{
             return Order::with([
-                "service" => function($q){ $q->select(["id", "title"]); },
                 "timeTable" => function($q){ $q->select(["id", "subject_of_professor_id"]); },
                 "timeTable.subjectOfProfessor.professor" => function($q){ $q->select(["id", "position", "personal_number", "department"]); },
                 "timeTable.subjectOfProfessor.professor.user.passport" => function($q){ $q->select(["id", "secondname", "firstname", "thirdname"]); },
@@ -123,9 +139,10 @@ class StatementService
     }
 
     /**
-     * Создание ведомости одного преподавателя
+     * Создание ведомости одного преподавателей
      */
-    public function createStatements(){
+    private function createStatements(): string
+    {
         $list = $this->dataSortAndFilter();
 
         $services = $list["services"];
@@ -354,8 +371,12 @@ class StatementService
 
     /**
      *
+     * Сокращение слова
+     * @param $word
+     * @return string
      */
-    private function makeShortTitle($word){
+    private function makeShortTitle($word): string
+    {
         $word = explode(" ", $word);
 
         $word[0] = mb_strimwidth($word[0], 0, 8, ".");

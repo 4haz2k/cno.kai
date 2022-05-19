@@ -206,11 +206,19 @@ class OthersController extends Controller
     /**
      * Получение файлов ведомости
      * @param StatementRequest $request
-     * @return BinaryFileResponse
+     * @return JsonResponse|BinaryFileResponse
      */
-    public function getStatement(StatementRequest $request): BinaryFileResponse
+    public function getStatement(StatementRequest $request)
     {
         $data = new StatementService(request("professor_id"));
-        return response()->download($data->createStatements())->deleteFileAfterSend(true);
+
+        $result = $data->getStatementLink();
+
+        if($result["status"]){
+            return response()->download($result["link"])->deleteFileAfterSend(true);
+        }
+        else{
+            return response()->json(["message" => $result["message"]]);
+        }
     }
 }
