@@ -7,6 +7,7 @@ use App\Http\Requests\StatementRequest;
 use App\Models\Order;
 use App\Models\Service;
 use App\Models\Speciality;
+use App\Models\TimeTable;
 use App\Services\StatementService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -220,5 +221,18 @@ class OthersController extends Controller
         else{
             return response()->json(["message" => $result["message"]]);
         }
+    }
+
+    /**
+     *
+     * Получение списка уникальных зданий из расписания
+     *
+     * @return JsonResponse
+     */
+    public function getBuildings(): JsonResponse
+    {
+        $buildings = TimeTable::distinct()->orderBy('building', 'ASC')->pluck("building");
+
+        return response()->json($buildings);
     }
 }

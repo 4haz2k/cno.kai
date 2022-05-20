@@ -107,13 +107,21 @@ Route::group([
 
 Route::group([
     'middleware' => 'api',
+    'prefix' => 'timetable',
+    'namespace' => 'App\Http\Controllers',
+], function (){
+    Route::post('/all', [SpecialitiesController::class, "getTimeTable"]);
+});
+
+Route::group([
+    'middleware' => 'api',
     'prefix' => 'other',
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/statistic/orders', [OthersController::class, "getStatistic"]);
     Route::post('/statistic/statements', [OthersController::class, "getStatement"]);
-    Route::get('/statistic/statements', [OthersController::class, "getStatement"]);
     Route::post('/services', [OthersController::class, "getServices"]);
     Route::post('/services/add', [OthersController::class, "addService"]);
     Route::post('/faculties', [OthersController::class, "getFaculties"]);
+    Route::post('/buildings', [OthersController::class, "getBuildings"]);
 });
