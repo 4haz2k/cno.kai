@@ -226,6 +226,7 @@ class ProfessorsController extends Controller
 
         $timetable = TimeTable::whereHas("subjectOfProfessor", function ($q){ $q->where("subject_id", \request("subject_id")); })
             ->whereHas("subjectOfProfessor", function ($q){ $q->where("professor_id", \request("professor_id")); })
+            ->doesntHave("order")
             ->get();
 
         foreach ($timetable as $item){
