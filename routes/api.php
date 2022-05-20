@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfessorsController;
 use App\Http\Controllers\SpecialitiesController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\SubjectsController;
+use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -110,7 +111,7 @@ Route::group([
     'prefix' => 'timetable',
     'namespace' => 'App\Http\Controllers',
 ], function (){
-    Route::post('/all', [SpecialitiesController::class, "getTimeTable"]);
+    Route::post('/all', [TimeTableController::class, "getTimeTable"]);
 });
 
 Route::group([
