@@ -19,6 +19,13 @@ class TimeTable extends Model
         "subject_of_professor_id"
     ];
 
+    protected $fillable = [
+        "subject_of_professor_id",
+        "building",
+        "date",
+        "classroom"
+    ];
+
     /**
      *
      * Получение связанного атрибута предмет преподавателя

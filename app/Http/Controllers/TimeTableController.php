@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TimeTableStoreRequest;
 use App\Models\TimeTable;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -50,5 +51,26 @@ class TimeTableController extends Controller
         );
 
         return response()->json($timetable);
+    }
+
+    /**
+     *
+     * Добавление нового расписания
+     *
+     * @param TimeTableStoreRequest $request
+     * @return JsonResponse
+     */
+    public function addTimeTable(TimeTableStoreRequest $request): JsonResponse
+    {
+        $timetable = new TimeTable([
+            "subject_of_professor_id" => $request->subject_of_professor_id,
+            "building" => $request->building,
+            "date" => Carbon::createFromFormat("d.m.Y", $request->date)->format("Y-m-d"),
+            "classroom" => $request->classroom
+        ]);
+
+        return $timetable->save() ?
+            response()->json(["message" => "timeTable saved"]) :
+            response()->json(["message" => "timeTable save error"], 500);
     }
 }

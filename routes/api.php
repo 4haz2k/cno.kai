@@ -112,6 +112,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/all', [TimeTableController::class, "getTimeTable"]);
+    Route::post('/add', [TimeTableController::class, "addTimeTable"]);
 });
 
 Route::group([
