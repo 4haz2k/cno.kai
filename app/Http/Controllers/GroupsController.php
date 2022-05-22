@@ -12,7 +12,7 @@ class GroupsController extends Controller
 {
     /**
      *
-     * Возврщает все группы
+     * Возвращает все группы
      *
      * @return JsonResponse
      */
@@ -30,14 +30,12 @@ class GroupsController extends Controller
      */
     public function addGroup(GroupRequest $request): JsonResponse
     {
-        $specialty = Speciality::where("id", \request("speciality"))->first();
+        $group = new Group();
 
-        $subject = new Group();
+        $group->group_code = $request->group;
+        $group->specialty_id = $request->speciality;
 
-        $subject->group_code = \request("group");
-        $subject->specialty_id = $specialty->id;
-
-        $subject->save();
+        $group->save();
 
         return response()->json(["message" => "data saved success"]);
     }
