@@ -121,7 +121,10 @@ class StatementService
                 else{ // если не найден, то добавляем новое значение препода
                     array_push($list, [
                         "professor_id" => $order->timeTable->subjectOfProfessor->professor->id,
-                        "fio" => $order->timeTable->subjectOfProfessor->professor->user->passport->secondname." ".$order->timeTable->subjectOfProfessor->professor->user->passport->firstname." ".$order->timeTable->subjectOfProfessor->professor->user->passport->thirdname,
+                        "fio" =>
+                            $order->timeTable->subjectOfProfessor->professor->user->passport->secondname ." ".
+                            $order->timeTable->subjectOfProfessor->professor->user->passport->firstname ." ".
+                            $order->timeTable->subjectOfProfessor->professor->user->passport->thirdname,
                         "department" => $order->timeTable->subjectOfProfessor->professor->department,
                         "personal_number" => $order->timeTable->subjectOfProfessor->professor->personal_number,
                         "position" => $order->timeTable->subjectOfProfessor->professor->position,
