@@ -15,16 +15,6 @@ use Illuminate\Http\JsonResponse;
 class OrdersController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
-//    }
-
-    /**
      *
      * Возвращает список заказов пользователя отсортированных по дате(сначала новые) соответсвующих заданным фильтрам
      * parms: uid - id пользователя, page - номер страницы, page_size - количество заявок на одной странице, new - вернуть только незавершенные заявки

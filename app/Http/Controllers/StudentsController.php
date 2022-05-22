@@ -11,16 +11,6 @@ use Illuminate\Http\Request;
 class StudentsController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
-//    }
-
-    /**
      *
      * Возвращает список студентов с параметрами group_id и speciality_id
      *

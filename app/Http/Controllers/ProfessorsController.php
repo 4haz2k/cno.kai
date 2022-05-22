@@ -15,16 +15,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class ProfessorsController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
-//    }
-
-    /**
      *
      * Возвращает список преподавателей и предметы
      *

@@ -2,9 +2,7 @@
 namespace App\Services;
 
 use App\Models\Order;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Exception\CopyFileException;
 use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
@@ -247,7 +245,7 @@ class DocumentService
      * @param $num
      * @return string
      */
-    public function numToString($num): string
+    private function numToString($num): string
     {
 
         /**
