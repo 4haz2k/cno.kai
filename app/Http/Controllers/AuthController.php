@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfessorOrAdminRequest;
+use App\Enum\RolesEnum;
 use App\Http\Requests\ProfileEditRequest;
 use App\Http\Requests\RegistrationRequest;
 use App\Models\Address;
@@ -26,63 +26,61 @@ class AuthController extends Controller
      */
     public function login(): JsonResponse
     {
-        $user = User::where("login", \request("email"));
+        $user = User::with(["passport.placeOfResidence", "student.group.speciality", "professor"])->where("login", \request("email"))->first();
 
-        if(!$user->first())
+        if(!$user)
             return response()->json(['error' => 'Bad login'], 401);
 
-        if (!Hash::check(\request("password"), $user->first()->password))
+        if (!Hash::check(\request("password"), $user->password))
             return response()->json(['error' => 'Bad password'], 401);
 
-        $user = $user->with(["passport.placeOfResidence", "student.group.speciality", "professor"])->get();
+        $passport = $user->passport;
 
-        $passport = $user->pluck("passport")[0];
+        $group = $user->student->group;
 
-        $group = $user->pluck("student.group");
-
-        switch ($user[0]->role){
-            case "STUDENT":
+        switch ($user->role){
+            case RolesEnum::student:
                 $data = [
-                    "id" => $user[0]->id,
+                    "id" => $user->id,
                     "passport" => $passport,
-                    "faculty" => $group[0]->speciality->faculty,
-                    "email" => $user[0]->login,
-                    "telephone" => $user[0]->phone,
-                    "group" => $group[0]->group_code,
-                    "img" => $user[0]->img,
-                    "role" => $user[0]->role
+                    "faculty" => $group->speciality->faculty,
+                    "email" => $user->login,
+                    "telephone" => $user->phone,
+                    "group" => $group->group_code,
+                    "img" => $user->img,
+                    "role" => $user->role
                 ];
                 break;
-            case "PREPOD":
+            case RolesEnum::professor:
                 $data = [
-                    "id" => $user[0]->id,
+                    "id" => $user->id,
                     "passport" => $passport,
-                    "email" => $user[0]->login,
-                    "telephone" => $user[0]->phone,
+                    "email" => $user->login,
+                    "telephone" => $user->phone,
 
-                    "price" => $user[0]->professor->price,
-                    "exp" => $user[0]->professor->date_of_commencement_of_teaching_activity,
-                    "personal_number" => $user[0]->professor->personal_number,
+                    "price" => $user->professor->price,
+                    "exp" => $user->professor->date_of_commencement_of_teaching_activity,
+                    "personal_number" => $user->professor->personal_number,
 
-                    "img" => $user[0]->img,
-                    "role" => $user[0]->role,
-                    "description" => $user[0]->professor->description
+                    "img" => $user->img,
+                    "role" => $user->role,
+                    "description" => $user->professor->description
                 ];
                 break;
 
-            case "ADMIN":
+            case RolesEnum::admin:
                 $data = [
-                    "id" => $user[0]->id,
+                    "id" => $user->id,
                     "passport" => $passport,
-                    "email" => $user[0]->login,
-                    "telephone" => $user[0]->phone,
-                    "img" => $user[0]->img,
-                    "role" => $user[0]->role
+                    "email" => $user->login,
+                    "telephone" => $user->phone,
+                    "img" => $user->img,
+                    "role" => $user->role
                 ];
                 break;
 
             default:
-                $data = ["error" => "Undefined role: {$user[0]->role}"];
+                $data = ["error" => "Undefined role: {$user->role}"];
                 break;
         }
 
@@ -157,7 +155,7 @@ class AuthController extends Controller
         $user->save();
 
         // Если роль препода
-        if($request->role == "PREPOD"){
+        if($request->role == RolesEnum::professor){
             $professor = new Professor();
             $professor->id = $user->id;
             $professor->position = \request("position");
@@ -169,7 +167,7 @@ class AuthController extends Controller
         }
 
         // Если роль студента
-        if($request->role == "STUDENT"){
+        if($request->role == RolesEnum::student){
             $student = new Student();
             $student->id = $user->id;
             $student->group_id = \request("group_id");
@@ -258,7 +256,7 @@ class AuthController extends Controller
         $user->save();
 
         // Если роль препода
-        if($request->role == "PREPOD"){
+        if($request->role == RolesEnum::professor){
             $professor = Professor::where("id", $request->user_id)->first();
             $professor->id = $user->id;
             $professor->position = \request("position");
@@ -270,7 +268,7 @@ class AuthController extends Controller
         }
 
         // Если роль студента
-        if($request->role == "STUDENT"){
+        if($request->role == RolesEnum::student){
             $student = Student::where("id", $request->user_id)->first();
             $student->id = $user->id;
             $student->group_id = \request("group_id");
