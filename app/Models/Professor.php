@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -46,5 +47,10 @@ class Professor extends Model
     public function subjects(): BelongsToMany
     {
         return $this->belongsToMany(Subject::class, "subjects_of_professor");
+    }
+
+    public function subjectOfProfessor(): HasMany
+    {
+        return $this->hasMany(SubjectsOfProfessor::class);
     }
 }
