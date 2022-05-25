@@ -19,6 +19,8 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function () {
     Route::get('/treaty', [FilesController::class, "getTreaty"]);
+    Route::post('/treaty/all', [FilesController::class, "getTreatyAll"]);
+    Route::post('/submission', [FilesController::class, "getSubmission"]);
 });
 
 Route::group([
