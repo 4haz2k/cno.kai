@@ -245,7 +245,7 @@ class DocumentService
      * @param $num
      * @return string
      */
-    private function numToString($num): string
+    public function numToString($num): string
     {
 
         /**
