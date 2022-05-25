@@ -36,17 +36,15 @@ class AuthController extends Controller
 
         $passport = $user->passport;
 
-        $group = $user->student->group;
-
         switch ($user->role){
             case RolesEnum::student:
                 $data = [
                     "id" => $user->id,
                     "passport" => $passport,
-                    "faculty" => $group->speciality->faculty,
+                    "faculty" => $user->student->group->speciality->faculty,
                     "email" => $user->login,
                     "telephone" => $user->phone,
-                    "group" => $group->group_code,
+                    "group" => $user->student->group->group_code,
                     "img" => $user->img,
                     "role" => $user->role
                 ];
