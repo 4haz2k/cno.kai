@@ -6,7 +6,6 @@ use App\Http\Requests\TimeTableStoreRequest;
 use App\Models\TimeTable;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class TimeTableController extends Controller
 {
@@ -36,7 +35,11 @@ class TimeTableController extends Controller
             $timetable = $timetable->where("building", \request("building"));
         }
 
-        $timetable = $timetable->paginate(\request("page_size") ? : 10)->toArray();
+        if (\request("actual")){
+            $timetable = $timetable->where("date", ">=", Carbon::now("Europe/Moscow")->format("Y-m-d"));
+        }
+
+        $timetable = $timetable->orderBy("date")->paginate(\request("page_size") ? : 10)->toArray();
 
         unset(
             $timetable["links"],
