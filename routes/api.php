@@ -10,7 +10,6 @@ use App\Http\Controllers\SpecialitiesController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\TimeTableController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -39,8 +38,6 @@ Route::group([
     'namespace' => 'App\Http\Controllers',
 ], function (){
     Route::post('/me', [AuthController::class, "me"]);
-    Route::post('/update/professor', [UserController::class, "updateProfessorData"]);
-    Route::post('/update/student', [UserController::class, "updateStudentData"]);
 });
 
 Route::group([
