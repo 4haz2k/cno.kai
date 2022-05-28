@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\StatusEnum;
 use App\Http\Requests\ServiceRequest;
 use App\Http\Requests\StatementRequest;
 use App\Models\Order;
@@ -161,6 +162,7 @@ class OthersController extends Controller
             ->where("create_date", "<=", $current_time)
             ->with("timeTable.subjectOfProfessor.subject")
             ->with("timeTable.subjectOfProfessor.professor.user.passport")
+            ->where("status", StatusEnum::lastStatus)
             ->get()
             ->makeHidden(["timeTable.subjectOfProfessor.professor.user.passport.number"]);
     }
@@ -219,7 +221,7 @@ class OthersController extends Controller
             return response()->download($result["link"])->deleteFileAfterSend(true);
         }
         else{
-            return response()->json(["message" => $result["message"]]);
+            return response()->json([], 204);
         }
     }
 

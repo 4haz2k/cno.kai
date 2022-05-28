@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TimeTableStoreRequest;
+use App\Models\SubjectsOfProfessor;
 use App\Models\TimeTable;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -65,8 +66,17 @@ class TimeTableController extends Controller
      */
     public function addTimeTable(TimeTableStoreRequest $request): JsonResponse
     {
+        $subject_of_professor_id = SubjectsOfProfessor::where("professor_id", $request->professor_id)
+            ->where("subject_id", $request->subject_id)
+            ->pluck("id")
+            ->first();
+
+        if(empty($subject_of_professor_id)){
+            return response()->json(["message" => "subject_of_professor_id not found by subject_id and professor_id"], 422);
+        }
+
         $timetable = new TimeTable([
-            "subject_of_professor_id" => $request->subject_of_professor_id,
+            "subject_of_professor_id" => $subject_of_professor_id,
             "building" => $request->building,
             "date" => Carbon::createFromFormat("d.m.Y", $request->date)->format("Y-m-d"),
             "classroom" => $request->classroom

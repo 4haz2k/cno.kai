@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\StatusEnum;
 use App\Http\Requests\ChangeStatusOfOrderRequest;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
@@ -41,7 +42,7 @@ class OrdersController extends Controller
 
         // есть ли в запросе "вернуть только незавершенные заявки"
         if((bool)\request("new")){
-            $data = $data->where("status", "!=", "Исполнено");
+            $data = $data->where("status", "!=", StatusEnum::lastStatus);
         }
 
         // есть ли в запросе "id предмета"

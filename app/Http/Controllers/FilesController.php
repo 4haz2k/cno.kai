@@ -74,7 +74,7 @@ class FilesController extends Controller
         $orders = $orders->get();
 
         if($orders->isEmpty()){
-            return response()->json(["message" => "Нет данных для отображения"]);
+            return response()->json([], 204);
         }
 
         if ($zipArchive->open(public_path("documents/treats.zip"), ZipArchive::CREATE) === TRUE)
@@ -109,7 +109,7 @@ class FilesController extends Controller
             return response()->download($file)->deleteFileAfterSend(true);
         }
         else{
-            return response()->json(["message" => "Нет данных для отображения"]);
+            return response()->json([], 204);
         }
     }
 }
