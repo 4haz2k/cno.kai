@@ -67,10 +67,14 @@ class FilesController extends Controller
                 return response()->json(["message" => "The given data was invalid."], 422);
         }
 
+        if(request("professor_id")){
+            $orders = $orders->whereHas("timeTable.subjectOfProfessor.professor", function ($q){ $q->where("professor_id", request("professor_id")); });
+        }
+
         $orders = $orders->get();
 
         if($orders->isEmpty()){
-            return response()->json([],204);
+            return response()->json(["message" => "Нет данных для отображения"]);
         }
 
         if ($zipArchive->open(public_path("documents/treats.zip"), ZipArchive::CREATE) === TRUE)
@@ -105,7 +109,7 @@ class FilesController extends Controller
             return response()->download($file)->deleteFileAfterSend(true);
         }
         else{
-            return response()->json([], 204);
+            return response()->json(["message" => "Нет данных для отображения"]);
         }
     }
 }
