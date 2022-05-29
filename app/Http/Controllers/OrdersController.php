@@ -158,9 +158,14 @@ class OrdersController extends Controller
         ])
             ->select(["id", "status", "hash", "student_id", "timetable_id"])
             ->whereHas("timeTable.subjectOfProfessor.professor", function ($q) { $q->where("id", \request("professor_id")); })
-            ->orderBy("create_date", "DESC")
-            ->paginate(\request("page_size") ? : 10)
-            ->toArray();
+            ->orderBy("create_date", "DESC");
+
+
+        if(request("status")){
+            $orders = $orders->where("status", request("status"));
+        }
+
+        $orders = $orders->paginate(\request("page_size") ? : 10)->toArray();
 
         unset(
             $orders["links"],
@@ -224,14 +229,28 @@ class OrdersController extends Controller
 
     /**
      *
-     * Изменение статуса заказа
+     * Изменение статуса заказа с проверкой следующего разрешенного статуса
      *
      * @param ChangeStatusOfOrderRequest $request
      * @return JsonResponse
      */
     public function changeStatus(ChangeStatusOfOrderRequest $request): JsonResponse
     {
+        $statuses = config("statics.statuses");
         $order = Order::where("id", $request->order_id)->first();
+
+        // Находим ключ статуса, который указан в заказе
+        $statusKeyToInsert = array_search($order->status, $statuses);
+
+        // Находим следущий ключ, который разрешен для изменения
+        $allowedNextStatusKey = ($statusKeyToInsert + 1) > (count($statuses) - 1) ? count($statuses) - 1 : ($statusKeyToInsert + 1);
+
+        // Проверяем, соответсвует ли запрашиваемый статус изменения с тем, который разрешён для изменения
+        if($statuses[$allowedNextStatusKey] != $request->status){
+            return response()->json(["error" => "Next status can't be {$request->status}"]);
+        }
+
+        // Сохраняем
         $order->status = $request->status;
         $order->save();
 
