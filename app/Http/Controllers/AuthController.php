@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     /**
-     * Get a JWT via given credentials.
+     * Авторизация по ролям
      *
      * @return JsonResponse
      */
@@ -86,7 +86,7 @@ class AuthController extends Controller
     }
 
     /**
-     * User registration
+     * Регистрация пользователей
      * @param RegistrationRequest $request
      * @return JsonResponse
      */
@@ -186,7 +186,7 @@ class AuthController extends Controller
     }
 
     /**
-     * User edit
+     * Изменение пользователей
      * @param ProfileEditRequest $request
      * @return JsonResponse
      */
@@ -283,18 +283,6 @@ class AuthController extends Controller
                 "surname" => $passport->secondname,
                 "role" => $user->role
             ]
-        ]);
-    }
-
-    /**
-     * Get the authenticated User.
-     *
-     * @return JsonResponse
-     */
-    public function me(): JsonResponse
-    {
-        return response()->json([
-            "user" => auth()->user()::with(["passport", "passport.placeOfResidence", "actualPlaceOfResidence"])->get(),
         ]);
     }
 }

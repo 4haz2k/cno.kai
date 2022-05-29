@@ -247,7 +247,7 @@ class OrdersController extends Controller
 
         // Проверяем, соответсвует ли запрашиваемый статус изменения с тем, который разрешён для изменения
         if($statuses[$allowedNextStatusKey] != $request->status){
-            return response()->json(["error" => "Next status can't be {$request->status}"]);
+            return response()->json(["error" => "Next status can't be {$request->status}"], 422);
         }
 
         // Сохраняем
