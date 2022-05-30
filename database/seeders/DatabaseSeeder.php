@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        for($i = 2; $i <= 9; $i++){
+        for($i = 0; $i <= 9; $i++){
             $address = new Address();
             $address->country = "Российская федерация";
             $address->region = "Республика Татарстан";
@@ -100,22 +100,26 @@ class DatabaseSeeder extends Seeder
             $user = new User();
             $user->id = $passport->id;
             $user->actual_place_of_residence_id = $address->id;
-            $user->login = "user0".$i."@mail.ru";
-            $user->password = Hash::make("User0".$i."!");
+            $user->login = "user1".$i."@mail.ru";
+            $user->password = Hash::make("User1".$i."!");
             $user->phone = $this->faker->phoneNumber;
-            $user->role = "STUDENT";
+            $user->role = "PREPOD";
             $user->save();
 
-            $group = Group::all()->random();
+            $speciality = Speciality::all()->random();
 
-            $student = new Student();
-            $student->id = $user->id;
-            $student->group_id = $group->id;
-            $student->receipt_date = $this->faker->dateTimeBetween(
-                Carbon::createFromDate(2017, 9, 1)->format("Y-m-d"),
-                Carbon::createFromDate(2019, 9, 1)->format("Y-m-d"),
+            $professor = new Professor();
+            $professor->id = $user->id;
+            $professor->position = $this->faker->randomElement(config("statics.positions"));
+            $professor->personal_number = $i != 0 ? $i : 1;
+            $professor->department = $speciality->faculty;
+            $professor->date_of_commencement_of_teaching_activity = $this->faker->dateTimeBetween(
+                Carbon::createFromDate(1990, 1, 1)->format("Y-m-d"),
+                Carbon::createFromDate(2010, 12, 31)->format("Y-m-d"),
             );
-            $student->save();
+            $professor->description = "Поле с описанием преподавателя с логином ".$user->login.".";
+            $professor->price = $this->faker->randomFloat(2, 200, 1200);
+            $professor->save();
         }
     }
 }

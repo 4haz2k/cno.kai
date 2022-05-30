@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property false|mixed|Date date_of_commencement_of_teaching_activity
  * @property array|Application|mixed|string|null department
  * @property array|Application|double|null price
+ * @property mixed|string description
  */
 class Professor extends Model
 {
