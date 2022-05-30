@@ -62,64 +62,54 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        for($i = 0; $i <= 9; $i++){
-            $address = new Address();
-            $address->country = "Российская федерация";
-            $address->region = "Республика Татарстан";
-            $address->locality = "Казань";
-            $address->district = $this->faker->randomElement(["Вахитовский", "Авиастроительный", "Кировский", "Московски", "Ново-Савиновский", "Советский", "Приволжский"]);
-            $address->street = "Восстания";
-            $address->house = $this->faker->numberBetween(1, 15);
-            $address->frame = $this->faker->numberBetween(1, 15);
-            $address->apartment = $this->faker->numberBetween(1, 15);
-            $address->save();
+        $subjects = [
+            [
+                "title" => "Управление проектами",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Основы программирования",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Основы экономики",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Прикладная информатика",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Прикладное програмирование",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Математический анализ",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Высшая математика",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Разработка программных модулей",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Внедрение и поддержка компьютерных систем",
+                "description" => "Это поле описания предмета"
+            ],
+            [
+                "title" => "Введение в предметную область",
+                "description" => "Это поле описания предмета"
+            ],
+        ];
 
-            $passport = new Passport();
-            $passport->id = $address->id;
-            $passport->series = $this->faker->numberBetween(9200, 9999);
-            $passport->number = $this->faker->numberBetween(800000, 899999);
-            $passport->date_of_issue = $this->faker->dateTimeBetween(
-                Carbon::createFromDate(2014, 1, 1)->format("Y-m-d"),
-                Carbon::createFromDate(2016, 12, 31)->format("Y-m-d"),
-            );
-            $passport->issued = "Отделом УФМС по городу Казани";
-            $passport->division_code = $this->faker->numberBetween(100, 999)."-".$this->faker->numberBetween(100, 999);
-            $passport->place_of_residence_id = $address->id;
-            $passport->secondname = $this->faker->lastName;
-            $passport->firstname = $this->faker->firstName("M");
-            $passport->thirdname = $this->faker->lastName;
-            $passport->ITN = $this->faker->numberBetween(111111111111, 888888888888);
-            $passport->INILA = $this->faker->numberBetween(11111111111, 88888888888);
-            $passport->birthday = $this->faker->dateTimeBetween(
-                Carbon::createFromDate(2002, 1, 1)->format("Y-m-d"),
-                Carbon::createFromDate(2005, 12, 31)->format("Y-m-d"),
-            );
-            $passport->sex = "M";
-            $passport->save();
-
-            $user = new User();
-            $user->id = $passport->id;
-            $user->actual_place_of_residence_id = $address->id;
-            $user->login = "user1".$i."@mail.ru";
-            $user->password = Hash::make("User1".$i."!");
-            $user->phone = $this->faker->phoneNumber;
-            $user->role = "PREPOD";
-            $user->save();
-
-            $speciality = Speciality::all()->random();
-
-            $professor = new Professor();
-            $professor->id = $user->id;
-            $professor->position = $this->faker->randomElement(config("statics.positions"));
-            $professor->personal_number = $i != 0 ? $i : 1;
-            $professor->department = $speciality->faculty;
-            $professor->date_of_commencement_of_teaching_activity = $this->faker->dateTimeBetween(
-                Carbon::createFromDate(1990, 1, 1)->format("Y-m-d"),
-                Carbon::createFromDate(2010, 12, 31)->format("Y-m-d"),
-            );
-            $professor->description = "Поле с описанием преподавателя с логином ".$user->login.".";
-            $professor->price = $this->faker->randomFloat(2, 200, 1200);
-            $professor->save();
+        foreach ($subjects as $subject) {
+            $subject_entity = new Subject();
+            $subject_entity->title = $subject["title"];
+            $subject_entity->description = $subject["description"];
+            $subject_entity->save();
         }
     }
 }
