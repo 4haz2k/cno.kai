@@ -16,6 +16,8 @@ use App\Models\Subject;
 use App\Models\SubjectsOfProfessor;
 use App\Models\TimeTable;
 use App\Models\User;
+use App\Services\DocumentService;
+use App\Services\SecurityService;
 use Carbon\Carbon;
 use Faker\Generator;
 use Illuminate\Container\Container;
@@ -62,54 +64,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $subjects = [
-            [
-                "title" => "Управление проектами",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Основы программирования",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Основы экономики",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Прикладная информатика",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Прикладное програмирование",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Математический анализ",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Высшая математика",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Разработка программных модулей",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Внедрение и поддержка компьютерных систем",
-                "description" => "Это поле описания предмета"
-            ],
-            [
-                "title" => "Введение в предметную область",
-                "description" => "Это поле описания предмета"
-            ],
-        ];
+        $timetable = TimeTable::with("subjectOfProfessor.professor")->get();
+        $students = Student::all();
+        $services = Service::all();
 
-        foreach ($subjects as $subject) {
-            $subject_entity = new Subject();
-            $subject_entity->title = $subject["title"];
-            $subject_entity->description = $subject["description"];
-            $subject_entity->save();
+        for($i = 0; $i < 50; $i++){
+            $timetable_rnd = $timetable->random();
+            $price = $timetable_rnd->subjectOfProfessor->professor->price;
+            $number_of_lessons = $this->faker->numberBetween(1, 3);
+
+            // Сохранение нового заказа
+            $order = new Order();
+            $order->student_id = $students->random()->id;
+            $order->timetable_id = $timetable_rnd->id;
+            $order->service_id = $services->random()->id;
+            $order->status = "Проверка";
+            $order->price = bcdiv($price * (double)$number_of_lessons, 1, 2);
+
+            $currentTime = Carbon::now("Europe/Moscow");
+            $order->create_date = $currentTime->toDateTimeString();
+
+            $order->number_of_lessons = $number_of_lessons;
+
+            $order->save();
+
+            // сохранение хэша
+            $security = new SecurityService();
+            $order->hash = $security->encryptData($order->id);
+            $order->update();
+
+            // Создание документа
+            $document = new DocumentService();
+            $result = $document->getDocument($order->id);
         }
     }
 }

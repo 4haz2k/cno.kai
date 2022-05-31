@@ -29,10 +29,10 @@ class AuthController extends Controller
         $user = User::with(["passport.placeOfResidence", "student.group.speciality", "professor"])->where("login", \request("email"))->first();
 
         if(!$user)
-            return response()->json(['error' => 'Bad login'], 401);
+            return response()->json(['field' => 'email', 'error' => 'Данного пользователя не существует'], 401);
 
         if (!Hash::check(\request("password"), $user->password))
-            return response()->json(['error' => 'Bad password'], 401);
+            return response()->json(['field' => 'password', 'error' => 'Введённый пароль неверный. Повторите попытку.'], 401);
 
         $passport = $user->passport;
 
