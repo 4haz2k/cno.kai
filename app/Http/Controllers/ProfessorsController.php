@@ -7,10 +7,7 @@ use App\Models\Professor;
 use App\Models\Subject;
 use App\Models\SubjectsOfProfessor;
 use App\Models\TimeTable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProfessorsController extends Controller
 {

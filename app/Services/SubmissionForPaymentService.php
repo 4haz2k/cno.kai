@@ -2,6 +2,7 @@
 namespace App\Services;
 
 
+use App\Enum\StatusEnum;
 use App\Models\Order;
 use App\Models\Professor;
 use Carbon\Carbon;
@@ -22,7 +23,7 @@ class SubmissionForPaymentService
     {
         $date = Carbon::now("Europe/Moscow");
         $this->firstRange =  $date->subMonth()->firstOfMonth()->toDateTimeString();
-        $this->lastRange = $date->lastOfMonth()->toDateTimeString();
+        $this->lastRange = $date->endOfMonth()->toDateTimeString();
     }
 
     /**
@@ -54,7 +55,7 @@ class SubmissionForPaymentService
             "user" => function ($q) { $q->select(["id"]); },
             "user.passport" => function ($q) { $q->select(["id", "firstname", "secondname", "thirdname"]); }
             ])
-            ->whereHas("subjectOfProfessor.timeTable.order", function ($q) { $q->where("orders.id", "!=", null); })
+            ->whereHas("subjectOfProfessor.timeTable.order", function ($q) { $q->where("orders.id", "!=", null)->where("orders.status", StatusEnum::lastStatus); })
             ->get()
             ->makeHidden(["date_of_commencement_of_teaching_activity", "description", "price"])
             ->toArray();

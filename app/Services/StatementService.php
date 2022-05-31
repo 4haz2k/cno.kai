@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Enum\StatusEnum;
 use App\Models\Order;
 use App\Models\Service;
 use Carbon\Carbon;
@@ -33,7 +34,7 @@ class StatementService
         $this->professor_id = $_professor_id;
         $date = Carbon::now("Europe/Moscow");
         $this->firstRange =  $date->subMonth()->firstOfMonth()->toDateTimeString();
-        $this->lastRange = $date->lastOfMonth()->toDateTimeString();
+        $this->lastRange = $date->endOfMonth()->toDateTimeString();
     }
 
     /**
@@ -72,6 +73,7 @@ class StatementService
             ])
                 ->where("create_date", ">=", $this->firstRange)
                 ->where("create_date", "<=", $this->lastRange)
+                ->where("status", StatusEnum::lastStatus)
                 ->select(["id", "student_id", "service_id", "timetable_id", "create_date"])
                 ->get();
         }
@@ -85,6 +87,7 @@ class StatementService
             ])
                 ->where("create_date", ">=", $this->firstRange)
                 ->where("create_date", "<=", $this->lastRange)
+                ->where("status", StatusEnum::lastStatus)
                 ->whereHas("timeTable.subjectOfProfessor.professor", function ($q){ $q->where("id", $this->professor_id); })
                 ->get();
         }
@@ -431,16 +434,21 @@ class StatementService
                 $filtered[$item['service']["id"].$item["date"].$item['group']["id"]] = $item;
             }
 
+            unset($array);
+
             $array = array_values($filtered);
 
             // соединяем заказы в один день месяца
             for($i = 0; $i < count($array); $i++){
-                for($j = 1; $j < count($array); $j++){
-                    if($array[$i]["service"]["id"] == $array[$j]["service"]["id"] and $array[$i]["date"] == $array[$j]["date"] and $array[$i]["group"]["id"] != $array[$j]["group"]["id"])
+                for($j = 0; $j < count($array); $j++){
+                    if(array_key_exists($i, $array) and array_key_exists($j, $array))
                     {
-                        $array[$i]["count"] += (int)$array[$j]["count"];
-                        $array[$i]["group"]["group_code"] .= ", ".$array[$j]["group"]["group_code"];
-                        unset($array[$j]);
+                        if($array[$i]["service"]["id"] == $array[$j]["service"]["id"] and $array[$i]["date"] == $array[$j]["date"] and $array[$i]["group"]["id"] != $array[$j]["group"]["id"])
+                        {
+                            $array[$i]["count"] += (int)$array[$j]["count"];
+                            $array[$i]["group"]["group_code"] .= ", ".$array[$j]["group"]["group_code"];
+                            unset($array[$j]);
+                        }
                     }
                 }
             }

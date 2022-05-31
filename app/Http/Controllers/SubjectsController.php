@@ -7,7 +7,6 @@ use App\Http\Requests\SubjectRequest;
 use App\Models\Subject;
 use App\Models\SubjectsOfProfessor;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class SubjectsController extends Controller
 {

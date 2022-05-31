@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Group;
-use App\Models\Speciality;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class StudentsController extends Controller
 {

@@ -12,6 +12,7 @@ use App\Models\TimeTable;
 use App\Services\StatementService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class OthersController extends Controller

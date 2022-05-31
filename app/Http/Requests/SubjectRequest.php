@@ -31,7 +31,7 @@ class SubjectRequest extends FormRequest
             ],
             "description" => [
                 "max:200",
-                "regex:/^[а-яёА-ЯЁA-Za-z]([\dа-яёА-ЯЁA-Za-z.-]|(\s[\dа-яёА-ЯЁA-Za-z]))+$/u"
+                "regex:/^[а-яёА-ЯЁA-Za-z]([\dа-яёА-ЯЁA-Za-z.,-]|(\s[\dа-яёА-ЯЁA-Za-z.,-]))+$/u"
             ]
         ];
     }
