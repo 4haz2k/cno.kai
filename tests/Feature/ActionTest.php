@@ -56,20 +56,6 @@ class ActionTest extends TestCase
     }
 
     /**
-     * Проверка модуля конвертации числа формата int в строку русского вида
-     * @test
-     */
-    public function test_num_convert_to_string(){
-        $num = 15425.16;
-        $expected = "15425 (пятнадцать тысяч четыреста двадцать пять) рублей (я) 16 копеек.";
-
-        $document = new DocumentService();
-        $result = $document->numToString($num);
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
      * Получение информации о преподавателе
      */
     public function test_get_professor_info(){
