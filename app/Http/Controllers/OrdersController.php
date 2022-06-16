@@ -164,6 +164,10 @@ class OrdersController extends Controller
             $orders = $orders->where("status", request("status"));
         }
 
+        if(request("subject_id")){
+            $orders = $orders->whereHas("timeTable.subjectOfProfessor.subject", function ($q) { $q->where("id", \request("subject_id")); });
+        }
+
         $orders = $orders->paginate(\request("page_size") ? : 10)->toArray();
 
         unset(
